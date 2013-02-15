@@ -1,0 +1,5 @@
+define([
+    "./pluginpack",
+    "./ServiceFactory"
+], function() {
+});
