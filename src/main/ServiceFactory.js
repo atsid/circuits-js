@@ -16,7 +16,8 @@ define([
     "./PluginMatcher",
     "./util",
     "./Logger",
-    "./ServiceQueue"
+    "./ServiceQueue",
+    "./NativeXhrDataProvider"
 ], function (
     declare,
     ZypSMDReader,
@@ -24,7 +25,8 @@ define([
     PluginMatcher,
     Util,
     Logger,
-    ServiceQueue
+    ServiceQueue,
+    NativeXhrDataProvider
 ) {
 
     var util = new Util(),
@@ -44,6 +46,7 @@ define([
 
                 this.config = util.mixin({
                     plugins: [],
+                    provider: new NativeXhrDataProvider({}),
                     resolver: function (serviceName) {
                         var object;
                         require({async: false}, [serviceName], function (Obj) {
