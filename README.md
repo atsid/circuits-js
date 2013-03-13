@@ -55,3 +55,6 @@ Special plugin types (not strictly part of the cycle)
               number total - total size if known
 
 Each plugin object has a name for identification, a type as described above, the function to execute, and a pointcut regular expression string or pattern regular expression string indicating what services and methods it is applied to (in the spirit of aspect-oriented programming). Circuits-js includes many plugins out of the box to meet common needs.
+
+##License
+This software is licensed under the Apache 2.0 license (http://www.apache.org/licenses/LICENSE-2.0).
