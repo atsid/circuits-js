@@ -174,13 +174,12 @@ define([
                     ? params.asynchronous : this.asynchronous,
 
                 readystatechange = function () {
-                    var resp = this.response || this.responseText;
                     if (params.onreadystatechange) {
                         params.onreadystatechange.call(this);
                     } else {
                         if (this.readyState === this.DONE) {
                             if (!this.loadcalled) { // prevent multiple done calls from xhr.
-
+                                var resp = this.response || this.responseText;
                                 this.loadcalled = true;
                                 if (resp && !this.responseType &&
                                         params.responseType === "json") {

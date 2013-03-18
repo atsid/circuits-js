@@ -61,7 +61,7 @@ define([
                     }
                 }
 
-                if (this.cancelled) {
+                if (this.canceled) {
                     logger.debug("Request [" + that.id + "] was canceled, not executing");
                 } else {
                     this.pending = true;

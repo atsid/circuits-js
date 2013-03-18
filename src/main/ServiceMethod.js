@@ -61,11 +61,14 @@ define([
                             payload = (statusCode < 400) ? that.processResponse(statusCode, data, plugins, ioArgs) : data,
                             total = 0;
 
-                        //This prevents an error to the call in a case such
-                        //as a create/new method.
-                        if (data) {
-                            total = data.total;
-                        }
+                        //add the total from the payload if it is an array response. putting it in the request object, as that is where http status, etc. is stored.
+                        newParams.request.total = data && data.total;
+
+                        //links should be sitting alonside the actual payload, like the total.
+                        newParams.links = data && data.links;
+
+                        total = data && data.total; //XXX: temporary transitional leaving it here. some projects expect it as the third arg in callback below
+
                         util.executePluginChain(plugins.handler, function (plugin) {
                             var regex = new RegExp(plugin.statusPattern);
                             newParams.plugin = plugin;
@@ -135,7 +138,7 @@ define([
              * @returns {Object} newPayload - the new or modified payload.
              */
             processRequest: function (payload, plugins, ioArgs) {
-                var writePayload = payload, intermediate, that = this;
+                var writePayload = payload || "", intermediate, that = this;
 
                 // Very simiplistic payload type coercion
                 if (this.requestPayloadName && !payload[this.requestPayloadName]) {
@@ -217,25 +220,27 @@ define([
                         logger.debug("Extracting payload for [" + this.name + "] from [" + this.payloadName + "] property", payload);
                     }
 
+
+                    //apply any read plugins supplied, after receiving the server results
+                    util.executePluginChain(plugins.read, function (plugin) {
+                        // filter plugins on statusPattern
+                        var statusPattern = plugin.statusPattern || successfulResponsePattern,
+                            regex = new RegExp(statusPattern);
+                        if (regex.test(statusCode)) {
+                            if (isList) {
+                                payload.some(function (item, idx) {
+                                    intermediate = plugin.fn.call(plugin.scope || plugin, item, that);
+                                    payload[idx] = intermediate || payload[idx];
+                                }, that);
+                            } else {
+                                intermediate = plugin.fn.call(plugin.scope || plugin, payload, that);
+                                payload = intermediate || payload;
+                            }
+                        }
+                    });
+
                 }
 
-                //apply any read plugins supplied, after receiving the server results
-                util.executePluginChain(plugins.read, function (plugin) {
-                    // filter plugins on statusPattern
-                    var statusPattern = plugin.statusPattern || successfulResponsePattern,
-                        regex = new RegExp(statusPattern);
-                    if (regex.test(statusCode)) {
-                        if (isList) {
-                            payload.some(function (item, idx) {
-                                intermediate = plugin.fn.call(plugin.scope || plugin, item, that);
-                                payload[idx] = intermediate || payload[idx];
-                            }, that);
-                        } else {
-                            intermediate = plugin.fn.call(plugin.scope || plugin, payload, that);
-                            payload = intermediate || payload;
-                        }
-                    }
-                });
 
                 this.data = payload; //hold on to a copy for future use (could be undefined of course)
 

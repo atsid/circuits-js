@@ -29,45 +29,49 @@ require([
             MockProviderCRUD = declare(DataProvider, {
                 resp: SimpleTestModelResponse,
                 create: function (params) {
-                    this.resp.model.createdByMock = true;
-                    params.handler.call(b, 200, this.resp, params);
-                    return new Request({}, function () {
+                    var that = this;
+                    params.request = new Request({}, function () {
+                        that.resp.model.createdByMock = true;
+                        params.handler.call(b, 200, that.resp, params);
                     });
+                    return params.request;
                 },
                 read: function (params) {
-                    var that = this, ret = new Request({}, function () {
-                    });
-                    if (params.url.indexOf("array") !== -1) {
-                        this.resp.model.readArrayByMock = true;
-                        params.handler.call(b, 200, [this.resp, this.resp], params);
-                    } else if (params.url.indexOf("error") !== -1) {
-                        params.request = new Request({}, function () {
-                            that.resp.model.readErrorByMock = that.resp.model.readErrorByMock ?
-                                    that.resp.model.readErrorByMock + 1 : 1;
+                    var that = this;
+                    params.request = new Request({}, function () {
+                        if (params.url.indexOf("array") !== -1) {
+                            that.resp.model.readArrayByMock = true;
+                            params.handler.call(b, 200, [that.resp, that.resp], params);
+                        } else if (params.url.indexOf("error") !== -1) {
+                            that.resp.model.readErrorByMock = that.resp.model.readErrorByMock ? that.resp.model.readErrorByMock + 1 : 1;
                             params.handler.call(b, 400, that.resp, params);
-                        });
-                        ret = params.request;
-                    } else {
-                        this.resp.model.readByMock = true;
-                        params.handler.call(b, 200, this.resp, params);
-                    }
-                    return ret;
+                        } else {
+                            that.resp.model.readByMock = true;
+                            params.handler.call(b, 200, that.resp, params);
+                        }
+                    });
+
+                    return params.request;
                 },
                 update: function (params) {
-                    this.resp.model.updatedByMock = true;
-                    if (typeof (params.payload.length) === 'number') {
-                        this.resp.model.arrayUpdate = params.payload;
-                        params.handler.call(b, 200, [this.resp, this.resp], params);
-                    } else {
-                        params.handler.call(b, 200, this.resp, params);
-                    }
-                    return new Request({}, function () {
+                    var that = this;
+                    params.request = new Request({}, function () {
+                        that.resp.model.updatedByMock = true;
+                        if (typeof (params.payload.length) === 'number') {
+                            that.resp.model.arrayUpdate = params.payload;
+                            params.handler.call(b, 200, [that.resp, that.resp], params);
+                        } else {
+                            params.handler.call(b, 200, that.resp, params);
+                        }
                     });
+                    return params.request;
                 },
                 del: function (params) {
-                    this.resp.model.deletedByMock = true;
-                    return new Request({}, function () {
+                    var that = this;
+                    params.request = new Request({}, function () {
+                        that.resp.model.deletedByMock = true;
                     });
+                    return params.request;
                 }
             }),
             mockProviderCRUD = new MockProviderCRUD(),
@@ -90,6 +94,15 @@ require([
             // Create a service in the recommended way using a factory with default resolution but
             // injecting a mock DataProvider.
             setUp: function () {
+                //mock provider instance is now referenced inside requests, so the test data is effectively cached and needs to be reset
+                mockProviderCRUD.resp.model.createdByMock = false;
+                mockProviderCRUD.resp.model.readArrayByMock = false;
+                mockProviderCRUD.resp.model.readErrorByMock = false;
+                mockProviderCRUD.resp.model.readByMock = false;
+                mockProviderCRUD.resp.model.updatedByMock = false;
+                mockProviderCRUD.resp.model.arrayUpdate = false;
+                mockProviderCRUD.resp.model.deletedByMock = false;
+
                 serviceFactoryCRUD = new Factory({provider: mockProviderCRUD, plugins: [handlerPlugin], resolver: SyncResolveServices });
                 serviceCRUD = serviceFactoryCRUD.getServiceByName("Schema/SimpleTestServiceSchema");
                 gotData = null;

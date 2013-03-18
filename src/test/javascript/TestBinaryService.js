@@ -20,20 +20,23 @@ require([
         MockProviderBinary = declare(DataProvider, {
             resp: SimpleTestModelResponse,
             create: function (params) {
+                var that = this;
                 this.resp.model.createdByMock = params.headers;
-                params.handler.call(b, 200, this.resp, params);
-                return new Request({}, function () {
+                params.request = new Request({}, function () {
+                    params.handler.call(b, 200, that.resp, params);
                 });
+                return params.request;
             },
             read: function (params) {
                 this.resp.model.createdByMock = params.headers;
-                var that = this, req = new Request(params, function () {
-                    params.handler.call(dojo.global, 200, that.resp, params);
+                var that = this;
+                params.request = new Request(params, function () {
+                    params.handler.call(this, 200, that.resp, params);
                 });
                 if (!params.dontExecute) {
-                    req.execute();
+                    params.request.execute();
                 }
-                return req;
+                return params.request;
             }
         }),
         mockProviderBinary = new MockProviderBinary(),
@@ -58,10 +61,11 @@ require([
             var svcfactory = new ServiceFactory(),
                 resp;
 
-            serviceBinary.uploadDocument(new FormData(), {load: function (data, params, count) {
+            serviceBinary.uploadDocument(new FormData(), {load: function (data, params) {
                 resp = data;
+                assertNotUndefined(resp.model.createdByMock["Content-Type"]);
             }});
-            assertNotUndefined(resp.model.createdByMock["Content-Type"]);
+
         },
 
         // test that the service description is read correctly.
@@ -70,7 +74,7 @@ require([
                 resp = null,
                 req;
 
-            req = serviceBinary.downloadDocument(new FormData(), {load: function (data, params, count) {
+            req = serviceBinary.downloadDocument(new FormData(), {load: function (data, params) {
                 resp = data;
             }});
 

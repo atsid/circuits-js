@@ -29,7 +29,14 @@ require([
                     caseNumber: "90009528"
                 },
                 "msg": "OK",
-                "success": true
+                "success": true,
+                "links": [{
+                    rel: "edit",
+                    href: "/cases/90009528"
+                }, {
+                    rel: "create",
+                    href: "/cases"
+                }]
             },
             myListResponse = {
                 "cases": [{
@@ -49,12 +56,14 @@ require([
             },
             MockProvider = declare(DataProvider, {
                 read: function (params) {
-                    if (params.url.indexOf("offset") !== -1) {
-                        params.handler.call(b, myListResponse, params);
-                    } else {
-                        params.handler.call(b, singleResponse, params);
-                    }
-                    return new Request({}, function () {});
+                    var request = new Request({}, function () {
+                        if (params.url.indexOf("offset") !== -1) {
+                            params.handler.call(b, 200, myListResponse, params);
+                        } else {
+                            params.handler.call(b, 200, singleResponse, params);
+                        }
+                    });
+                    return request;
                 }
             }),
             mockProvider = new MockProvider(),
@@ -84,11 +93,11 @@ require([
         
                 var method = new ServiceMethod("readCase", myReader, mockProvider),
                     plugins = util.mixin(this.defaultPlugins, {
-                        load: [{
-                            name: 'load',
-                            fn: function (data, params, total) {
+                        handler: [{
+                            fn: function (data, params) {
                                 assertEquals("90009528", data.caseNumber);
-                                assertUndefined(total); //single item response, should have undefined total
+                                assertUndefined(params.request.total); //single item response, should have undefined total
+                                assertEquals(2, params.links.length);
                             }
                         }]
                     });
@@ -102,11 +111,10 @@ require([
             testInvokeAny: function () {
                 var method = new ServiceMethod("readRawPDF", myReader, mockProvider),
                     plugins = util.mixin(this.defaultPlugins, {
-                        load: [{
-                            name: 'load',
-                            fn: function (data, params, total) {
+                        handler: [{
+                            fn: function (data, params) {
                                 assertEquals("90009528", data.case.caseNumber);
-                                assertUndefined(total); //single item response, should have undefined total
+                                assertUndefined(params.request.total); //single item response, should have undefined total
                             }
                         }]
                     });
@@ -130,13 +138,13 @@ require([
                             }
                         }
                     ],
-                    load: [
+                    handler: [
                         {
                             name: 'load1',
-                            fn : function (data, params, total) {
+                            fn : function (data, params) {
                                 assertEquals("1", data.caseNumber); //we've transformed the case number in the read processor
                                 assertTrue(data.justRead);
-                                assertUndefined(total); //single item response, should have undefined total
+                                assertUndefined(params.request.total); //single item response, should have undefined total
                             }
                         }
                     ]
@@ -153,19 +161,19 @@ require([
         
                 var method = new ServiceMethod("readCaseList", myReader, mockProvider),
                     plugins = util.mixin(this.defaultPlugins, {
-                        load: [
+                        handler: [
                             {
                                 name: 'load',
-                                fn: function (data, params, total) {
+                                fn: function (data, params) {
                                     assertEquals(2, data.length);
-                                    assertEquals(10, total);
+                                    assertEquals(10, params.request.total);
                                     assertEquals("90009528", data[0].caseNumber);
                                     assertEquals("90009529", data[1].caseNumber);
                                 }
                             }
                         ]
                     });
-        
+
                 method.invoke({
                     offset: 0,
                     count: 2
@@ -177,22 +185,24 @@ require([
         
                 var method = new ServiceMethod("readCaseNoteList", myReader, mockProvider),
                     plugins = util.mixin(this.defaultPlugins, {
-                        load: [{
+                        handler: [{
                             name: 'load',
+                            statusPattern: "(2|3)\\d\\d",
                             fn: function (data, params, total) {
                                 assertTrue(false);
                             }
-                        }],
-                        error: [{
+                        }, {
                             name: 'error',
+                            statusPattern: "(4|5)\\d\\d",
                             fn: function (data, params) {
                                 assertFalse(data.success);
                             }
                         }]
                     });
                 mockProvider.read = function (params) {
-                    params.handler.call(this, 400, errorResponse, params);
-                    return new Request({}, function () {});
+                    return new Request({}, function () {
+                        params.handler.call(this, 400, errorResponse, params);
+                    });
                 };
         
                 method.invoke({
@@ -207,24 +217,36 @@ require([
 
                 var method = new ServiceMethod("deleteCaseNote", myReader, mockProvider),
                     plugins = util.mixin(this.defaultPlugins, {
-                        load: [{
-                            name: 'load',
-                            fn: function (data, params, total) {
-                                assertUndefined(data);
+                        response: [{
+                            fn: function (data, params) {
+                                assertTrue(false); //shouldn't execute response callback on null responses, so verify no execution
+                            }
+                        }],
+                        read: [{
+                            fn: function (item) {
+                                assertTrue(false); //read plugins shouldn't execute against null responses either
+                            }
+                        }],
+                        handler: [{
+                            fn: function (data, params) {
+                                assertUndefined(data); //load callback should have undefined data for null response, since it wasn't processed
                             }
                         }]
                     });
+
                 mockProvider.read = function (params) {
-                    params.handler.call(this, 204, undefinedResponse, params);
-                    return new Request({}, function () {});
+                    return new Request({}, function () {
+                        params.handler.call(this, 204, undefinedResponse, params);
+                    });
                 };
 
                 method.invoke({
                     caseNumber: "12345678",
                     noteId: 1
                 }, plugins);
+
             }
-        
+
         });
     
     });

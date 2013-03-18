@@ -471,7 +471,7 @@ define([
                 isList = false;
 
             if (response.type !== "null") {
-                if ((payloadName && response.properties[payloadName].type && response.properties[payloadName].type === "array") ||
+                if ((payloadName && response.properties[payloadName] && response.properties[payloadName].type === "array") ||
                         (response.type && response.type === "array")) {
                     isList = true;
                 }

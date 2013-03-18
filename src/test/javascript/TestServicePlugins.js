@@ -58,8 +58,10 @@ require([
                 create: function (params) {
                     var ret = sclone(this.resp);
                     ret.model.ceatedByMock = true;
-                    params.handler.call(b, 200, ret, params);
-                    return new Request({}, function () {});
+                    params.request = new Request({}, function () {
+                        params.handler.call(b, 200, ret, params);
+                    });
+                    return params.request;
                 },
                 read: function (params) {
                     var ret;
@@ -70,20 +72,26 @@ require([
                         ret = sclone(this.listResp);
                         ret.msg = "readByMock";
                     }
-                    params.handler.call(b, 200, ret, params);
-                    return new Request({}, function () {});
+                    params.request = new Request({}, function () {
+                        params.handler.call(b, 200, ret, params);
+                    });
+                    return params.request;
                 },
                 update: function (params) {
                     var ret = sclone(this.resp);
                     ret.model.updatedByMock = true;
-                    params.handler.call(b, 200, ret, params);
-                    return new Request({}, function () {});
+                    params.request = new Request({}, function () {
+                        params.handler.call(b, 200, ret, params);
+                    });
+                    return params.request;
                 },
                 del: function (params) {
                     var ret = sclone(this.resp);
                     ret.model.deletedByMock = true;
-                    params.handler.call(b, 200, ret, params);
-                    return new Request({}, function () {});
+                    params.request = new Request({}, function () {
+                        params.handler.call(b, 200, ret, params);
+                    });
+                    return params.request;
                 }
             }),
             mockProviderTSP = new MockProviderTSP(),
