@@ -97,7 +97,7 @@ define([
                 //unwind the property stack so that the earliest gets inheritance link
                 schema.properties = schema.properties || {};
                 function copyprop(item) { //util to get around jslint complaints about doing this directly in loop
-                    schema.properties[item.key] = item.val;
+                    schema.properties[item.key] = item.value;
                 }
 
                 while (xprops.length > 0) {
