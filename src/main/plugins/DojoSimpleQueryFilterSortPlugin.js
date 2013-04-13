@@ -8,7 +8,7 @@ define([
     "../Plugin",
     "dojo/store/util/SimpleQueryEngine"
 ], function (
-    OreLang,
+    declare,
     Logger,
     Plugin,
     QueryEngine
