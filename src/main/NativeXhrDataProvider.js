@@ -34,7 +34,7 @@ define([
 
         /**
          * test - do a network test with a synchronous call.
-         * @param - url to test.
+         * @param url to test.
          */
         test: function (url) {
             var ret = true, xhr;

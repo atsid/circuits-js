@@ -14,5 +14,5 @@
         dojox: "empty:"
     },
     name: "circuits/pluginpack",
-    out: "circuits-plugins-1.0.0-min.js"
+    out: "circuits-plugins-1.0.1-min.js"
 })
