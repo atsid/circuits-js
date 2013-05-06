@@ -1,9 +1,0 @@
-{
-    "name": "circuits-js",
-    "description": "Provides JSONSchema-based RESTful web service abstraction.",
-    "version": "1.0.0",
-    "dojoBuild": "circuits.profile.js",
-    "files": ["src/main"],
-    "dependencies": {
-	}
-}

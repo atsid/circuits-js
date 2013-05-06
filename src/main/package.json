@@ -1,0 +1,33 @@
+{
+    "name": "circuits-js",
+    "description": "A robust and pluggable client-side library for accessing services.",
+    "keywords": ["SMD", "JSON Schema", "services", "REST", "service descriptors", "client-side", "models", "plugins"],
+    "homepage": "http://atsid.github.io/",
+    "version": "1.0.1",
+    "licenses": [
+        {
+            "type": "Apache2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0"
+        }
+    ],
+    "contributors": [
+        {
+            "name": "talkswithnumbers"
+        },
+        {
+            "name": "tom-servo"
+        },
+        {
+            "name": "chileric"
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/atsid/circuits-js.git"
+    },
+    "dojoBuild": "circuits.profile.js",
+    "dependencies": {
+    },
+    "optionalDependencies": {
+    }
+}

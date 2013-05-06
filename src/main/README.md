@@ -1,1 +1,0 @@
-A library for dealing with SMD-described services.
