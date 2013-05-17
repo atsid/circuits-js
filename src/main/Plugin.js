@@ -10,7 +10,7 @@
  * 'url'      - executed after the url for the service method is generated, before the request is sent, used to modify the generated url.
  *              The associated function is of the form: function({String} url, {circuits.ServiceMethod} method).
  * 'request'  - executed before any requests are sent, applied to the raw JS request object. The associated function is of the form:
- *              function({Object} payload, {circuits.ServiceMethod} method, ioArgs).
+ *              function({Object} payload, {circuits.ServiceMethod} method, headers).
  * 'response' - executed as soon as the response is received, applied to the raw JSON payload
  *              The associated function is of the form: function({Object} fullPayload, {circuits.ServiceMethod} method, ioArgs).
  * 'handler'  - this plugin type is used to process either the completed response or an error that occurs during the

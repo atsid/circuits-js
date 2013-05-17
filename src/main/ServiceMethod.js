@@ -36,12 +36,12 @@ define([
              * Call this service method with the provided params and plugins.
              * Note: that this is not generally expected to be called directly by developers - see the Service
              * class for an example of how it is wrapped up in a service-specific named method.
-             * @param {Object} - the parameters to the service call, these are service-call specific as defined by the SMD this
+             * @param params {Object} - the parameters to the service call, these are service-call specific as defined by the SMD this
              *  service is based on. There is special handling for request payloads (e.g. for POST's and PUT's):
              *  - If params.payload exists it is used as the initial payload, otherwise params is used.
              *  - If the initial payload does not have the structure expected by the type defined in the SMD, it is coerced
              *      into that structure before processing.
-             * @param {hash by type of arrays of circuits.Plugin's} - the plugins that should be applied to this invocation.
+             * @param plugins {hash by type of arrays of circuits.Plugin's} - the plugins that should be applied to this invocation.
              */
             invoke: function (params, plugins) {
                 logger.debug("Calling service method: " + this.name + " with params", params);
@@ -52,7 +52,8 @@ define([
                     url = this.reader.getServiceUrl(this.name, params),
                     smdReturn = this.reader.getResponseSchema(this.name),
                     payloadParamDef = this.reader.getRequestPayloadParam(this.name),
-                    headers,
+                    headers = {"Content-Type": "application/json"},
+                    intermediate,
                     requestPayload = params.payload || params,
                     newParams = util.mixin({}, params),
                     responseType = (smdReturn.type === "any" ? "blob" : "json"),
@@ -95,11 +96,17 @@ define([
                     provider = provider.fn.call(provider.scope || provider, this);
                 }
 
+                // Allow request plugins to execute
+                util.executePluginChain(plugins.request, function (plugin) {
+                    intermediate = plugin.fn.call(plugin.scope || plugin, requestPayload, that, headers);
+                    requestPayload = intermediate || requestPayload;
+                });
+
                 // Only execute payload plugins if the method expects a payload.
                 if (provider.httpMethodMap[method].hasPayload) {
                     // add Content-Type header if there is a payload and it has an enctype.
                     if (payloadParamDef && payloadParamDef.enctype) {
-                        headers = {"Content-Type": payloadParamDef.enctype};
+                        headers["Content-Type"] = payloadParamDef.enctype;
                         // it's a regular payload so process it.
                     } else {
                         requestPayload = this.processRequest(requestPayload, plugins);
@@ -134,10 +141,11 @@ define([
              * a request payload. The method attempts to coerce the payload into the type specified
              * in the smd and then runs the 'request' and 'write' plugins returning the new payload.
              *
-             * @param {Object} payload - the request data passed to the service method by the client.
+             * @param payload{Object} payload - the request data passed to the service method by the client.
+             * @param plugins - the plugins applicable to this service call.
              * @returns {Object} newPayload - the new or modified payload.
              */
-            processRequest: function (payload, plugins, ioArgs) {
+            processRequest: function (payload, plugins) {
                 var writePayload = payload || "", intermediate, that = this;
 
                 // Very simiplistic payload type coercion
@@ -145,12 +153,6 @@ define([
                     payload = {};
                     payload[this.requestPayloadName] = writePayload;
                 }
-
-                // Allow request plugins to execute
-                util.executePluginChain(plugins.request, function (plugin) {
-                    intermediate = plugin.fn.call(plugin.scope || plugin, payload, that, ioArgs);
-                    payload = intermediate || payload;
-                });
 
                 writePayload = (this.requestPayloadName && payload[this.requestPayloadName]) || payload;
 

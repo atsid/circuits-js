@@ -149,7 +149,7 @@ require([
                 },
                 {
                     type: 'request',
-                    fn: function (data, params) {
+                    fn: function (data, method, headers) {
                         factoryRequestCalled = true;
                         return data;
                     }
@@ -196,7 +196,7 @@ require([
                 assertTrue(serviceTSP.factoryGotMixin);
                 assertTrue(factoryReadCalled);
                 assertTrue(factoryResponseCalled);
-                assertFalse(factoryRequestCalled);
+                assertTrue(factoryRequestCalled);
             },
     
             // test factory level plugins
@@ -207,7 +207,7 @@ require([
                 assertTrue(serviceTSP.factoryGotMixin);
                 assertTrue(factoryReadCalled);
                 assertTrue(factoryResponseCalled);
-                assertFalse(factoryRequestCalled);
+                assertTrue(factoryRequestCalled);
             },
     
             // test service level plugin overrides
@@ -218,7 +218,7 @@ require([
                 assertTrue(serviceTSP.factoryGotMixin);
                 assertTrue(factoryReadCalled);
                 assertTrue(factoryResponseCalled);
-                assertFalse(factoryRequestCalled);
+                assertTrue(factoryRequestCalled);
                 assertTrue(additionalPluginCalled);
                 assertTrue(additionalPluginCalledWithCorrectScope);
                 additionalPluginCalled = false;
@@ -230,7 +230,7 @@ require([
                 assertTrue(serviceTSP.factoryGotMixin);
                 assertTrue(factoryReadCalled);
                 assertTrue(factoryResponseCalled);
-                assertFalse(factoryRequestCalled);
+                assertTrue(factoryRequestCalled);
                 assertFalse(additionalPluginCalled);
             },
     
@@ -242,7 +242,7 @@ require([
                 assertTrue(serviceTSP.factoryGotMixin);
                 assertTrue(factoryReadCalled);
                 assertTrue(factoryResponseCalled);
-                assertFalse(factoryRequestCalled);
+                assertTrue(factoryRequestCalled);
                 assertTrue(additionalPluginCalled);
                 assertTrue(additionalPluginCalledWithCorrectScope);
                 additionalPluginCalled = false;
@@ -253,7 +253,7 @@ require([
                 assertTrue(serviceTSP.factoryGotMixin);
                 assertTrue(factoryReadCalled);
                 assertTrue(factoryResponseCalled);
-                assertFalse(factoryRequestCalled);
+                assertTrue(factoryRequestCalled);
                 assertFalse(additionalPluginCalled);
             },
     
