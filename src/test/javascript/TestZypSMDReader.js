@@ -89,7 +89,8 @@ require([
             testConstructor: function () {
                 assertNotEquals(undefined, this.myReader);
                 assertEquals(resolvedCaseService, caseServiceForReader);
-                assertTrue(this.myReader.smd.tag.resolved);
+                assertTrue(this.myReader.smd.resolved);
+                assertTrue(this.myReader.smd.resolvedProperties);
             },
 
             //Verify b the id field of the used test schema is equal

@@ -160,20 +160,18 @@ define([
                     }
                 });
 
-                schema.resolved = true;
             }
 
             //only resolve these once, or else our concats will be a problem
             if (!schema.resolved) {
-
                 resolveRef(schema, null, null);
-
-                logger.debug("Resolved schema $refs", schema);
-
+                schema.resolved = true;
             }
 
-            resolveProperties(schema);
-
+            if (!schema.resolvedProperties) {
+                resolveProperties(schema);
+                schema.resolvedProperties = true;
+            }
 
             var hash = {};
 
