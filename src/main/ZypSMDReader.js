@@ -34,6 +34,7 @@ define([
 
             //finds all $ref instances and replaces with the actual object
             //similar to dojox.json.ref.resolveJson, but doesn't get hung up on circular references
+            //TODO: should we assume all schemas have been resolved prior, and remove this step?
             function resolveRef(subobj, parent, parentKey) {
 
                 Object.keys(subobj).forEach(function (key, idx, obj) {
@@ -42,11 +43,8 @@ define([
                         logger.debug("Resolving $ref: " + value);
                         Ref = refResolver(value);
                         value = typeof Ref === 'function' ? new Ref() : Ref;
-                        if (!util.isUndefined(value) && !(value.tag && value.tag.resolved)) {
-                            if (!value.tag) {
-                                value.tag = {};
-                            }
-                            value.tag.resolved = true;
+                        if (!util.isUndefined(value) && !value.resolved) {
+                            value.resolved = true;
                             resolveRef(value, subobj, key);
                         }
                         parent[parentKey] = value;
@@ -162,21 +160,20 @@ define([
                     }
                 });
 
-                if (!schema.tag) {
-                    schema.tag = {};
-                }
-                schema.tag.resolved = true;
+                schema.resolved = true;
             }
 
             //only resolve these once, or else our concats will be a problem
-            if (!(schema.tag && schema.tag.resolved)) {
+            if (!schema.resolved) {
 
                 resolveRef(schema, null, null);
 
                 logger.debug("Resolved schema $refs", schema);
 
-                resolveProperties(schema);
             }
+
+            resolveProperties(schema);
+
 
             var hash = {};
 
