@@ -5,16 +5,13 @@
  *
  */
 define([
-    "./Logger",
     "./util",
     "./declare"
 ], function (
-    Logger,
     Util,
     declare
 ) {
-    var logger = new Logger("debug"),
-        util = new Util(),
+    var util = new Util(),
         module = declare(null, {
 
         /**
@@ -82,7 +79,7 @@ define([
              */
             this.hasErrors = function () {
                 var ret = false;
-                requests.forEach(function (item, idx) {
+                requests.forEach(function (item) {
                     if (item.inError) {
                         ret = true;
                     }
@@ -125,7 +122,7 @@ define([
 
                 this.executed = true;
 
-                calls.forEach(function (item, idx) {
+                calls.forEach(function (item) {
                     var callbacks = util.mixin({}, item.callbacks),
                         currentLoad = callbacks.load;
 

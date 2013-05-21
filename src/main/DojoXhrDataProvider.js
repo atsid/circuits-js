@@ -11,7 +11,7 @@ define([
     "./Request"
 ], function (
     dojo,
-    delcare,
+    declare,
     Logger,
     DataProvider,
     Request

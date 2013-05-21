@@ -191,7 +191,6 @@ define([
                 //TODO: "any" is JSONSchema default if no type is defined. this should come through a model though so we aren't tacking it on everywhere
                     returnType = this.reader.getResponseSchema(this.name).type || "any", //this could fail if there is no "returns" block on the method
                     payload,
-                    items,
                     that = this,
                     intermediate,
                     successfulResponsePattern = '(2|3)\\d\\d';

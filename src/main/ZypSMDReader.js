@@ -37,7 +37,7 @@ define([
             //TODO: should we assume all schemas have been resolved prior, and remove this step?
             function resolveRef(subobj, parent, parentKey) {
 
-                Object.keys(subobj).forEach(function (key, idx, obj) {
+                Object.keys(subobj).forEach(function (key) {
                     var Ref, value = subobj[key];
                     if (key === "$ref") {
                         logger.debug("Resolving $ref: " + value);
@@ -64,7 +64,7 @@ define([
 
                     items.forEach(function (item) {
 
-                        Object.keys(item.properties).forEach(function (key, idx, o) {
+                        Object.keys(item.properties).forEach(function (key) {
                             var value = item.properties[key];
                             if (key !== "__parent") {
                                 propsObj.push({
@@ -124,7 +124,7 @@ define([
                 // resolve inherited global parameters
                 resolveExtendedParameters(schema);
 
-                Object.keys(schema.services || {}).forEach(function (key, idx, obj) {
+                Object.keys(schema.services || {}).forEach(function (key) {
                     var value = schema.services[key];
                     //value.target = value.target ? schema.target + value.target : schema.target; //TODO: should this build concat paths? that is currently handled in getServiceUrl function
                     value.returns = value.returns || schema.returns;
@@ -137,10 +137,13 @@ define([
                         resolveExtensions(value.returns);
                     }
 
-                    value.parameters && value.parameters.forEach(function (item) {
-                        item.envelope = item.envelope || value.envelope;
-                        item.description = item.description || "";
-                    });
+                    if (value.parameters) {
+                        value.parameters.forEach(function (item) {
+                            item.envelope = item.envelope || value.envelope;
+                            item.description = item.description || "";
+                        });
+                    }
+
 
                     var ext = value["extends"];
 
@@ -162,12 +165,13 @@ define([
 
             }
 
-            //only resolve these once, or else our concats will be a problem
+            //if a schema has already been resolved, don't do it again - we can get into endless recursion
             if (!schema.resolved) {
                 resolveRef(schema, null, null);
                 schema.resolved = true;
             }
 
+            //only resolve these once, or else our concats will be a problem
             if (!schema.resolvedProperties) {
                 resolveProperties(schema);
                 schema.resolvedProperties = true;
@@ -212,7 +216,7 @@ define([
         getMethodNames: function () {
             var names = [];
 
-            Object.keys(this.smd.services || {}).forEach(function (serviceName, idx, obj) {
+            Object.keys(this.smd.services || {}).forEach(function (serviceName) {
                 names.push(serviceName);
             });
 
@@ -225,7 +229,7 @@ define([
         getMethods: function () {
             var services = [], smdServices = this.smd.services;
 
-            Object.keys(smdServices || []).forEach(function (serviceName, idx, obj) {
+            Object.keys(smdServices || []).forEach(function (serviceName) {
                 services.push(smdServices[serviceName]);
             });
 

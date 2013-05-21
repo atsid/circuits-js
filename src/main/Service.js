@@ -86,7 +86,7 @@ define([
                  * @return {Array} the array of plugins converted if necessary.
                  */
                 this.convertCallbackParam = function (param) {
-                    var ret = param || [], scope, plugin;
+                    var ret = param || [], plugin;
 
                     if (param && Object.prototype.toString.call(param) !== "[object Array]") {
                         ret = [];

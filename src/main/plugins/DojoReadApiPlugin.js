@@ -18,7 +18,7 @@ define([
 ) {
         
         var logger = new Logger("debug"),
-            util = new Util,
+            util = new Util(),
             module = declare(Plugin, {
                 constructor: function () {
                     this.type = "mixin";
