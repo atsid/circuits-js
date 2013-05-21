@@ -3,7 +3,7 @@
     "description": "A robust and pluggable client-side library for accessing services.",
     "keywords": ["SMD", "JSON Schema", "services", "REST", "service descriptors", "client-side", "models", "plugins"],
     "homepage": "http://atsid.github.io/",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "licenses": [
         {
             "type": "Apache2.0",
