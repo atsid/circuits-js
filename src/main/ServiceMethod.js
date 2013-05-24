@@ -126,7 +126,7 @@ define([
                     dontExecute: true
                 });
 
-                if (smdReturn.type === "any") {
+                if (smdReturn.type === "any" || smdReturn.type === "object") {
                     newParams.request.url = url;
                     newParams.request.mediaType = this.smdMethod.contentType || "";
                     logger.debug("Setting request for returnType=any  " + newParams.request);
