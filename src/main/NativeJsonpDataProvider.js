@@ -1,5 +1,5 @@
 /**
- * @class circuits.NativeXhrDataProvider
+ * @class circuits.NativeJsonpDataProvider
  *
  * Data provider implementation that wraps the native XmlHttpRequest.
  */
@@ -36,19 +36,30 @@ define([
              * test - do a network test with a synchronous call.
              * @param url to test.
              */
-            test: function (url) {
-
+            read: function (params) {
+                return this.addScript(params.id, params.url);
             },
 
             create: function (params) {
-
-                logger.error("JSONP requests can not execute create method");
-
+                throw new Error("Can not do create via JSONP");
             },
 
-            attach: function (id, url) {
-                var doc =  Document,
-                    element = doc.createElement('script');
+            update: function (params) {
+                throw new Error("Can not do updates via JSONP");
+            },
+
+            del: function (params) {
+                throw new Error("Can not do deletes via JSONP");
+            },
+
+            /**
+             * Adds script tag to header of page to make jsonp request.
+             * @param id
+             * @param url
+             * @returns {Node}
+             */
+            addScript: function (id, url) {
+                var element = document.createElement('script');
 
                 element.type = 'text/javascript';
                 element.src = url;
@@ -56,7 +67,7 @@ define([
                 element.async = true;
                 element.charset = 'utf-8';
 
-                return doc.getElementsByTagName('head')[0].appendChild(element);
+                return document.getElementsByTagName('head')[0].appendChild(element);
             }
 
         });
