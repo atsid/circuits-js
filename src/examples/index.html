@@ -74,16 +74,9 @@ Most of the code is setting up AMD (which becomes negligible in larger projects)
                 // ... you need to call it like this, passing a handler plugin that
                 // responds to any response code.
                 service.getModel({callback: function(data) {
-                            //do  stuff
-
+                            msg.value = JSON.stringify(data);
                         },
-                        q: "select * from yahoo.finance.quotes where symbol = 'YHOO'"}, [
-                        new HandlerPlugin({
-                            fn: function (data, params) {
-                                msg.value = JSON.stringify(data);
-                            }
-                        })
-                ]);
+                        q: "select * from yahoo.finance.quotes where symbol = 'YHOO'"});
             }
 
         });

@@ -22,7 +22,6 @@ define([
              */
             constructor: function (config) {
                 var test = new XMLHttpRequest(), that = this;
-                this.call
                 if (!test.upload) {
                     logger.warn("NativeXhrDataProvider: This runtime is not XHR level 2 compliant.");
                 }
@@ -38,7 +37,7 @@ define([
              * @param url to test.
              */
             read: function (params) {
-                return this.addScript(params.id, params.url);
+                return this.addScript(params);
             },
 
             create: function (params) {
@@ -59,25 +58,24 @@ define([
              * @param url
              * @returns {Node}
              */
-            addScript: function (id, url) {
-                var element = document.createElement('script');
-
+            addScript: function (params) {
+                var element = document.createElement('script'),
+                    callbackName = params.jsonpCallbackParam,
+                    callback = params.payload.callback,
+                    jsonpCallback = 'jsonp' + new Date().getTime();
+                    
+                window[jsonpCallback] = function (data) {
+                    callback(data);
+                };
+    
                 element.type = 'text/javascript';
-                element.src = url;
-                element.id = id;
+                element.src = params.url + '&' + callbackName + '=' + jsonpCallback;
+                element.id = params.id;
                 element.async = true;
                 element.charset = 'utf-8';
 
                 return document.getElementsByTagName('head')[0].appendChild(element);
-            },
-
-            callback: function(processResults) {
-
-
             }
-
-
-
         });
     return module;
 });

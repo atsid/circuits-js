@@ -51,6 +51,7 @@ define([
                     provider = this.provider,
                     method = this.transport,
                     url = this.reader.getServiceUrl(this.name, params),
+                    jsonpCallbackParam = this.jsonpCallbackParameter,
                     smdReturn = this.reader.getResponseSchema(this.name),
                     payloadParamDef = this.reader.getRequestPayloadParam(this.name),
                     headers = {"Content-Type": "application/json"},
@@ -118,6 +119,7 @@ define([
 
                 newParams.request = provider[provider.httpMethodMap[method].method]({
                     url: url,
+                    jsonpCallbackParam: jsonpCallbackParam,
                     headers: headers,
                     payload: requestPayload,
                     handler: providerHandler,
