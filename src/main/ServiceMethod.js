@@ -30,6 +30,7 @@ define([
                 this.requestPayloadName = reader.getRequestPayloadName(this.name);
                 this.transport = reader.getMethodTransport(this.name);
                 this.smdMethod = reader.getMethod(this.name);
+                this.jsonpCallbackParameter = reader.getJsonpCallbackParameter();
             },
 
             /**
@@ -129,6 +130,8 @@ define([
                     newParams.request.url = url;
                     newParams.request.mediaType = this.smdMethod.contentType || "";
                     logger.debug("Setting request for returnType=any  " + newParams.request);
+                } else if (method === "JSONP") {
+                    console.log("need to do something with params and url for jsonp request.");
                 } else {
                     newParams.request.execute();
                 }
