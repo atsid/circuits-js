@@ -30,6 +30,7 @@ define([
                 this.requestPayloadName = reader.getRequestPayloadName(this.name);
                 this.transport = reader.getMethodTransport(this.name);
                 this.smdMethod = reader.getMethod(this.name);
+                this.jsonpCallbackParameter = reader.getJsonpCallbackParameter();
             },
 
             /**
@@ -50,6 +51,7 @@ define([
                     provider = this.provider,
                     method = this.transport,
                     url = this.reader.getServiceUrl(this.name, params),
+                    jsonpCallbackParam = this.jsonpCallbackParameter,
                     smdReturn = this.reader.getResponseSchema(this.name),
                     payloadParamDef = this.reader.getRequestPayloadParam(this.name),
                     headers = {"Content-Type": "application/json"},
@@ -117,6 +119,7 @@ define([
 
                 newParams.request = provider[provider.httpMethodMap[method].method]({
                     url: url,
+                    jsonpCallbackParam: jsonpCallbackParam,
                     headers: headers,
                     payload: requestPayload,
                     handler: providerHandler,
@@ -125,10 +128,12 @@ define([
                     dontExecute: true
                 });
 
-                if (smdReturn.type === "any") {
+                if (smdReturn.type === "any" || smdReturn.type === "object") {
                     newParams.request.url = url;
                     newParams.request.mediaType = this.smdMethod.contentType || "";
                     logger.debug("Setting request for returnType=any  " + newParams.request);
+                } else if (method === "JSONP") {
+                    console.log("need to do something with params and url for jsonp request.");
                 } else {
                     newParams.request.execute();
                 }
