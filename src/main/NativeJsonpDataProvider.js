@@ -62,19 +62,22 @@ define([
                 var element = document.createElement('script'),
                     callbackName = params.jsonpCallbackParam,
                     callback = params.payload.callback,
-                    jsonpCallback = 'jsonp' + new Date().getTime();
-                    
+                    jsonpCallback = 'jsonp' + new Date().getTime(),
+                    headElement = document.getElementsByTagName('head')[0];
                 window[jsonpCallback] = function (data) {
                     callback(data);
+                    delete window[jsonpCallback];
+                    element = document.getElementById(jsonpCallback);
+                    headElement.removeChild(element);
                 };
     
                 element.type = 'text/javascript';
                 element.src = params.url + '&' + callbackName + '=' + jsonpCallback;
-                element.id = params.id;
+                element.id = jsonpCallback;
                 element.async = true;
                 element.charset = 'utf-8';
 
-                return document.getElementsByTagName('head')[0].appendChild(element);
+                return headElement.appendChild(element);
             }
         });
     return module;
