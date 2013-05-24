@@ -1,5 +1,5 @@
 /**
- * @class circuits.NativeXhrDataProvider
+ * @class circuits.NativeJsonpDataProvider
  *
  * Data provider implementation that wraps the native XmlHttpRequest.
  */
@@ -13,7 +13,7 @@ define([
     DataProvider,
     Request,
     Logger
-) {
+    ) {
     var logger = new Logger("debug"),
         module = declare(DataProvider, {
 
@@ -22,6 +22,7 @@ define([
              */
             constructor: function (config) {
                 var test = new XMLHttpRequest(), that = this;
+                this.call
                 if (!test.upload) {
                     logger.warn("NativeXhrDataProvider: This runtime is not XHR level 2 compliant.");
                 }
@@ -36,19 +37,30 @@ define([
              * test - do a network test with a synchronous call.
              * @param url to test.
              */
-            test: function (url) {
-
+            read: function (params) {
+                return this.addScript(params.id, params.url);
             },
 
             create: function (params) {
-
-                logger.error("JSONP requests can not execute create method");
-
+                throw new Error("Can not do create via JSONP");
             },
 
-            attach: function (id, url) {
-                var doc = document,
-                    element = doc.createElement('script');
+            update: function (params) {
+                throw new Error("Can not do updates via JSONP");
+            },
+
+            del: function (params) {
+                throw new Error("Can not do deletes via JSONP");
+            },
+
+            /**
+             * Adds script tag to header of page to make jsonp request.
+             * @param id
+             * @param url
+             * @returns {Node}
+             */
+            addScript: function (id, url) {
+                var element = document.createElement('script');
 
                 element.type = 'text/javascript';
                 element.src = url;
@@ -56,12 +68,15 @@ define([
                 element.async = true;
                 element.charset = 'utf-8';
 
-                return doc.getElementsByTagName('head')[0].appendChild(element);
+                return document.getElementsByTagName('head')[0].appendChild(element);
             },
-            
-            read: function (params) {
-                return this.attach(params.id, params.url);
+
+            callback: function(processResults) {
+
+
             }
+
+
 
         });
     return module;
