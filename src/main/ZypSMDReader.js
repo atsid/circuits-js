@@ -211,6 +211,12 @@ define([
         },
 
         /**
+         * Gets the root target property for the service.
+         */
+        getJsonpCallbackParameter: function () {
+            return this.smd.jsonpCallbackParameter;
+        },
+        /**
          * Gets a list of the service method names defined by the SMD.
          */
         getMethodNames: function () {
@@ -314,9 +320,9 @@ define([
 
         getAndValidateArgument: function (param, args) {
             args = args || {};
-            var arg = args[param.name];
+            var arg = args[param.name] || param.default;
 
-            if (typeof arg === "undefined" && param.required === true) {
+            if (typeof arg === "undefined" && (param.required === true || param.optional === false)) {
                 throw new Error("Missing required param for service call: " + param.name);
             }
 

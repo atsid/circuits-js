@@ -62,7 +62,8 @@ define([
             'GET': {method: 'read', hasPayload: false},
             'POST': {method: 'create', hasPayload: true},
             'PUT': {method: 'update', hasPayload: true},
-            'DELETE': {method: 'del', hasPayload: false}
+            'DELETE': {method: 'del', hasPayload: false},
+            'JSONP': {method: 'read', hasPayload: false}
         }
     });
 
