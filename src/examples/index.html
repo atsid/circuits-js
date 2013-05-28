@@ -1,0 +1,90 @@
+<!--
+Simple sample page to demonstrate the use of SMD services with circuits.
+It uses an SMD for a service that loads a simple json file, and a model schema describing the return value.
+It creates a service via the service factory using the above SMD and allows it to be called displaying
+the returned value.
+It is intended to be loaded directly from the file system in this directory.
+Most of the code is setting up AMD (which becomes negligible in larger projects).
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+    Include only an amd loader.
+    -->
+    <script src="./require.js"></script>
+    <script>
+        // Configure AMD to find things.
+        var path = location.pathname.replace(/\/[^/]+$/, '');
+        require.config({
+            baseUrl: "./",
+            paths: {
+                circuits: "../main", // schematic-js code
+                schema: "schema", // the example schema
+                example: "."
+            }
+        });
+    </script>
+    <script>
+        // Use AMD to define and load the resources we depend on.
+        require([
+            "circuits/ServiceFactory",
+            "circuits/plugins/HandlerPlugin",
+            "schema/YqlService",
+            "schema/ExampleStockModel",
+            "circuits/NativeJsonpDataProvider"
+        ], function (
+                ServiceFactory,
+                HandlerPlugin,
+                ExampleService,
+                ExampleModel,
+                DataProvider
+        ) {
+            // Create a service factory.
+            var sfact = new ServiceFactory({
+                    provider: new DataProvider({}),
+                    // "resolver" is used by the factory to find schemas based on names.
+                    // resolve schema by mapping it to the dependency where it was already loaded.
+                    resolver: function (name) {
+                        if (name === "schema/YqlSchema") {
+                            return ExampleService;
+                        } else if (name === "schema/ExampleStockModel") {
+                            return ExampleModel;
+                        }
+                    }
+                }),
+                msg = document.getElementsByName("ReturnedValue")[0],
+                btn = document.getElementsByName("CallService")[0],
+
+            // Get a service based on the SMD.
+                service = sfact.getServiceByName("schema/YqlSchema");
+
+            // Call service and handle returned data.
+            btn.onclick = function (evt) {
+                // Below is the normal way to call a service (with a success function), but
+                // because this page is run from the file system and the "service" is actually
+                // a call through the "file:///" protocol, status codes are handled differently.
+                // so....
+                //service.getModel({file: "ExampleModelJson"}, {
+                //    success: function (data, params) {
+                //        msg.value = JSON.stringify(data);
+                //    }
+                // });
+
+                // ... you need to call it like this, passing a handler plugin that
+                // responds to any response code.
+                service.getModel({callback: function(data) {
+                            msg.value = JSON.stringify(data);
+                        },
+                        q: "select * from yahoo.finance.quotes where symbol = 'YHOO'"});
+            }
+
+        });
+    </script>
+
+</head>
+<body>
+    <button name="CallService">Call Service</button>
+    <textarea name="ReturnedValue"></textarea>
+</body>
+</html>
