@@ -19,73 +19,73 @@ define([
     var logger = new Logger("debug"),
         util = new Util(),
         module = declare(ServiceDescriptorReader, {
-        /**
-         * Constructor requires a JSONSchema-compliant SMD file in Zyp format.
-         */
-        constructor: function (schema, refResolver) {
+            /**
+             * Constructor requires a JSONSchema-compliant SMD file in Zyp format.
+             */
+            constructor: function (schema, refResolver) {
 
-            logger.debug("Creating reader for schema", schema);
+                logger.debug("Creating reader for schema", schema);
 
-            if (!refResolver) {
-                refResolver = new AmdResolver({path: "", altSeparator: "\\.", synchronous: true}).resolver;
-            }
-
-            this.smd = schema;
-
-            //finds all $ref instances and replaces with the actual object
-            //similar to dojox.json.ref.resolveJson, but doesn't get hung up on circular references
-            //TODO: should we assume all schemas have been resolved prior, and remove this step?
-            function resolveRef(subobj, parent, parentKey) {
-
-                Object.keys(subobj).forEach(function (key) {
-                    var Ref, value = subobj[key];
-                    if (key === "$ref") {
-                        logger.debug("Resolving $ref: " + value);
-                        Ref = refResolver(value);
-                        value = typeof Ref === 'function' ? new Ref() : Ref;
-                        if (!util.isUndefined(value) && !value.resolved) {
-                            value.resolved = true;
-                            resolveRef(value, subobj, key);
-                        }
-                        parent[parentKey] = value;
-                    } else if (typeof value === "object") {
-                        resolveRef(value, subobj, key);
-                    }
-
-                });
-            }
-
-            function getExtendedProperties(obj, props) {
-                var parent = (obj && obj["extends"]), propsObj = [], items = [];
-
-                if (typeof parent !== "undefined") {
-
-                    items = util.isArray(parent) ? parent : [parent]; //can be multiple-inheritance
-
-                    items.forEach(function (item) {
-
-                        Object.keys(item.properties).forEach(function (key) {
-                            var value = item.properties[key];
-                            if (key !== "__parent") {
-                                propsObj.push({
-                                    parentId: item.id,
-                                    key: key,
-                                    value: value
-                                });
-                            }
-                        });
-
-                    }, this);
-
-                    props.push(propsObj);
-                    props = getExtendedProperties(parent, props);
+                if (!refResolver) {
+                    refResolver = new AmdResolver({path: "", altSeparator: "\\.", synchronous: true}).resolver;
                 }
 
-                return props;
+                this.smd = schema;
 
-            }
+                //finds all $ref instances and replaces with the actual object
+                //similar to dojox.json.ref.resolveJson, but doesn't get hung up on circular references
+                //TODO: should we assume all schemas have been resolved prior, and remove this step?
+                function resolveRef(subobj, parent, parentKey) {
+                    if (!subobj.resolved) {
+                        Object.keys(subobj).forEach(function (key) {
+                            var Ref, value = subobj[key];
+                            if (key === "$ref") {
+                                logger.debug("Resolving $ref: " + value);
+                                Ref = refResolver(value);
+                                value = typeof Ref === 'function' ? new Ref() : Ref;
+                                if (!util.isUndefined(value) && !value.resolved) {
+                                    value.resolved = true;
+                                    resolveRef(value, subobj, key);
+                                }
+                                parent[parentKey] = value;
+                            } else if (typeof value === "object") {
+                                resolveRef(value, subobj, key);
+                            }
+                        });
+                    }
+                }
 
-            //looks in JSONSchema objects for "extends" and copies properties to children
+                function getExtendedProperties(obj, props) {
+                    var parent = (obj && obj["extends"]), propsObj = [], items = [], itemProps;
+
+                    if (typeof parent !== "undefined") {
+
+                        items = util.isArray(parent) ? parent : [parent]; //can be multiple-inheritance
+
+                        items.forEach(function (item) {
+                            itemProps = item.properties || {};
+                            Object.keys(itemProps).forEach(function (key) {
+                                var value = item.properties[key];
+                                if (key !== "__parent") {
+                                    propsObj.push({
+                                        parentId: item.id,
+                                        key: key,
+                                        value: value
+                                    });
+                                }
+                            });
+
+                        }, this);
+
+                        props.push(propsObj);
+                        props = getExtendedProperties(parent, props);
+                    }
+
+                    return props;
+
+                }
+
+                //looks in JSONSchema objects for "extends" and copies properties to children
             function resolveExtensions(schema) {
 
                 var xprops, props;

@@ -14,5 +14,5 @@
         dojox: "empty:"
     },
     name: "circuits/allpack",
-    out: "circuits-1.0.1-min.js"
+    out: "circuits-1.0.3-min.js"
 })
