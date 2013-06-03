@@ -150,7 +150,7 @@ define([
          * @overrides
          */
         supportsTransport: function (transport) {
-            return transport === 'XHR';
+            return transport === 'REST';
         },
 
         /**
