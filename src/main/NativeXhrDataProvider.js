@@ -143,6 +143,15 @@ define([
             return request;
 
         },
+        
+        /**
+         * @param {string} transport
+         * @return {boolean} 
+         * @overrides
+         */
+        supportsTransport: function (transport) {
+            return transport === 'XHR';
+        },
 
         /**
          * Perform the actual XMLHttpRequest call, interpreting the params as necessary.

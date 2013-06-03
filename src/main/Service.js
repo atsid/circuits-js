@@ -14,7 +14,8 @@ define([
     "./util",
     "./Logger",
     "./plugins/HandlerErrorPlugin",
-    "./plugins/HandlerSuccessPlugin"
+    "./plugins/HandlerSuccessPlugin",
+    "./NativeJsonpDataProvider"
 ], function (
     declare,
     ServiceMethod,
@@ -22,7 +23,8 @@ define([
     Util,
     Logger,
     HandlerErrorPlugin,
-    HandlerSuccessPlugin
+    HandlerSuccessPlugin,
+    NativeJsonpDataProvider
 ) {
 
     var util = new Util(),
@@ -39,7 +41,8 @@ define([
                 var that = this,
                     methodsHash = {},
                     methodsArr = [],
-                    schemaId = reader.getSchemaId();
+                    schemaId = reader.getSchemaId(),
+                    transport = reader.getTransport();
 
                 logger.debug("Creating new Service based on schema: " + schemaId);
                 logger.debug("Got service plugins", servicePlugins);
@@ -49,6 +52,16 @@ define([
                 this.factoryPlugins = factoryPlugins;
                 this.plugins = servicePlugins;
                 this.pluginMatcher = new PluginMatcher();
+                
+                //if JSONP transport is not supported by the existing provider
+                if (transport === 'JSONP' && !provider.supportsTransport('JSONP')) {
+                    this.addPlugin({
+                        type: 'provider',
+                        fn: function () {
+                            return new NativeJsonpDataProvider({});
+                        }
+                    });
+                }
 
                 //instantiate and hash ServiceMethods on the Service
                 reader.getMethodNames().forEach(function (methodName) {

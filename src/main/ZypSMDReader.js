@@ -216,6 +216,14 @@ define([
         getJsonpCallbackParameter: function () {
             return this.smd.jsonpCallbackParameter;
         },
+        
+        /**
+         * Gets the transport property for the service.
+         */
+        getTransport: function () {
+            return this.smd.transport;
+        },
+        
         /**
          * Gets a list of the service method names defined by the SMD.
          */

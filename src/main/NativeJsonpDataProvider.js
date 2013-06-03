@@ -34,7 +34,7 @@ define([
 
             /**
              * test - do a network test with a synchronous call.
-             * @param url to test.
+             * @param {object} params
              */
             read: function (params) {
                 return this.addScript(params);
@@ -51,11 +51,19 @@ define([
             del: function (params) {
                 throw new Error("Can not do deletes via JSONP");
             },
+            
+            /**
+             * @param {string} transport
+             * @return {boolean} 
+             * @overrides
+             */
+            supportsTransport: function (transport) {
+                return transport === 'JSONP';
+            },
 
             /**
              * Adds script tag to header of page to make jsonp request.
-             * @param id
-             * @param url
+             * @param {object} params 
              * @returns {Node}
              */
             addScript: function (params) {
@@ -63,21 +71,44 @@ define([
                     callbackName = params.jsonpCallbackParam,
                     callback = params.payload.callback,
                     jsonpCallback = 'jsonp' + new Date().getTime(),
+                    jsonpUrl = callbackName + '=' + jsonpCallback,
                     headElement = document.getElementsByTagName('head')[0];
+                    
                 window[jsonpCallback] = function (data) {
                     callback(data);
                     delete window[jsonpCallback];
-                    element = document.getElementById(jsonpCallback);
                     headElement.removeChild(element);
                 };
     
                 element.type = 'text/javascript';
-                element.src = params.url + '&' + callbackName + '=' + jsonpCallback;
+                element.src = this.updateQueryString(params.url, callbackName, jsonpCallback);
                 element.id = jsonpCallback;
                 element.async = true;
                 element.charset = 'utf-8';
 
                 return headElement.appendChild(element);
+            },
+            
+            /**
+             * Appends the callback paramater to the existing url
+             * @param {string} url
+             * @param {string} key
+             * @param {string} value
+             * @returns {string}
+             */
+            updateQueryString: function (url, key, value) {
+                var regex = new RegExp("([?|&])" + key + "=.*?(&|#|$)(.*)", "gi"),
+                    separator, 
+                    hash;
+                    
+                if (regex.test(url)) {
+                    url = url.replace(regex, '$1' + key + "=" + value + '$2$3');
+                } else {
+                    separator = url.indexOf('?') !== -1 ? '&' : '?',
+                    hash = url.split('#');
+                    url = hash[0] + separator + key + '=' + value;
+                }
+                return url;
             }
         });
     return module;
