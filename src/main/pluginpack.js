@@ -2,6 +2,7 @@ define([
     "./OfflineTolerantProvider",
     "./DojoXhrDataProvider",
     "./NativeXhrDataProvider",
+    "./NativeJsonpDataProvider",
     "./plugins/DataProviderPlugin",
     "./plugins/DojoReadApiPlugin",
     "./plugins/DojoSimpleQueryFilterSortPlugin",
