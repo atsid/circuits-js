@@ -16,28 +16,29 @@ define([
     ) {
     var logger = new Logger("debug"),
         module = declare(DataProvider, {
-
-            /**
-             * @constructor - warn on level compliance
-             */
+        
             constructor: function (config) {
-                var test = new XMLHttpRequest(), that = this;
-                if (!test.upload) {
-                    logger.warn("NativeXhrDataProvider: This runtime is not XHR level 2 compliant.");
-                }
-                this.asynchronous = (config && typeof (config.asynchronous) === 'boolean')
-                    ? config.asynchronous : true;
+                var that = this;
+                
                 this.hitchedInvoke = function () {
-                    that.invokeXhrSend.apply(that, arguments);
+                    that.invokeJsonpRequest.apply(that, arguments);
                 };
             },
 
             /**
-             * test - do a network test with a synchronous call.
              * @param {object} params
+             * @return {object} request
              */
             read: function (params) {
-                return this.addScript(params);
+                var jsonpCallback = 'jsonp' + new Date().getTime(),
+                request = new Request({
+                    callbackName: params.jsonpCallbackParam,
+                    callback: params.payload.callback,
+                    jsonpCallback: jsonpCallback,
+                    jsonpUrl: params.url
+                }, this.hitchedInvoke);
+            
+                return request;
             },
 
             create: function (params) {
@@ -62,17 +63,16 @@ define([
             },
 
             /**
-             * Adds script tag to header of page to make jsonp request.
+             * Adds script tag to header of page to make jsonp request and invokes the callback.
              * @param {object} params 
              * @returns {Node}
              */
-            addScript: function (params) {
+            invokeJsonpRequest: function (params) {
                 var element = document.createElement('script'),
-                    callbackName = params.jsonpCallbackParam,
-                    callback = params.payload.callback,
-                    jsonpCallback = 'jsonp' + new Date().getTime(),
-                    jsonpUrl = callbackName + '=' + jsonpCallback,
-                    headElement = document.getElementsByTagName('head')[0];
+                    headElement = document.getElementsByTagName('head')[0],
+                    callback = params.callback,
+                    jsonpCallback = params.jsonpCallback;
+
                     
                 window[jsonpCallback] = function (data) {
                     callback(data);
@@ -81,12 +81,12 @@ define([
                 };
     
                 element.type = 'text/javascript';
-                element.src = this.updateQueryString(params.url, callbackName, jsonpCallback);
+                element.src = this.updateQueryString(params.jsonpUrl, params.callbackName, jsonpCallback);
                 element.id = jsonpCallback;
                 element.async = true;
                 element.charset = 'utf-8';
 
-                return headElement.appendChild(element);
+                headElement.appendChild(element);
             },
             
             /**

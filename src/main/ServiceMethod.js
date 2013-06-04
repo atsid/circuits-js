@@ -128,12 +128,10 @@ define([
                     dontExecute: true
                 });
 
-                if (smdReturn.type === "any" || smdReturn.type === "object") {
+                if (smdReturn.type === "any") {
                     newParams.request.url = url;
                     newParams.request.mediaType = this.smdMethod.contentType || "";
                     logger.debug("Setting request for returnType=any  " + newParams.request);
-                } else if (method === "JSONP") {
-                    console.log("need to do something with params and url for jsonp request.");
                 } else {
                     newParams.request.execute();
                 }
