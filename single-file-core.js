@@ -11,5 +11,5 @@
         circuits: "."
     },
     name: "circuits/ServiceFactory",
-    out: "circuits-core-1.0.1-min.js"
+    out: "circuits-core-1.0.4-min.js"
 })
