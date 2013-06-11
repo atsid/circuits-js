@@ -1,7 +1,7 @@
 /**
  * @class circuits.NativeJsonpDataProvider
  *
- * Data provider implementation that wraps the native XmlHttpRequest.
+ * Data provider implementation that implements JSONP.
  */
 define([
     "./declare",
@@ -13,7 +13,7 @@ define([
     DataProvider,
     Request,
     Logger
-    ) {
+) {
     var logger = new Logger("debug"),
         module = declare(DataProvider, {
         
@@ -33,9 +33,11 @@ define([
                 var jsonpCallback = 'jsonp' + new Date().getTime(),
                 request = new Request({
                     callbackName: params.jsonpCallbackParam,
-                    callback: params.payload.callback,
+                    load: params.payload.load,
+                    error: params.payload.error,
                     jsonpCallback: jsonpCallback,
-                    jsonpUrl: params.url
+                    jsonpUrl: params.url,
+                    timeout: params.timeout
                 }, this.hitchedInvoke);
             
                 return request;
@@ -65,20 +67,42 @@ define([
             /**
              * Adds script tag to header of page to make jsonp request and invokes the callback.
              * @param {object} params 
-             * @returns {Node}
              */
             invokeJsonpRequest: function (params) {
                 var element = document.createElement('script'),
                     headElement = document.getElementsByTagName('head')[0],
-                    callback = params.callback,
-                    jsonpCallback = params.jsonpCallback;
+                    load = params.load,
+                    error = params.error,
+                    jsonpCallback = params.jsonpCallback,
+                    timeout = params.timeout || 10000,
+                    timeoutId,
+                    handleError = function (err) {
+                        window.clearTimeout(timeoutId);
+                        delete window[jsonpCallback];
+                        headElement.removeChild(element);
+                        if (error) {
+                            error({message: err});
+                        }
+                    };
 
                     
                 window[jsonpCallback] = function (data) {
-                    callback(data);
+                    window.clearTimeout(timeoutId);
+                    // TODO: add response validation here
+                    load(data);
                     delete window[jsonpCallback];
                     headElement.removeChild(element);
                 };
+                
+                // Error handlers fall back to timeout. 
+                element.onerror = handleError;
+                element.onreadystatechange = function () {
+                    var readyState = element.readyState;
+                    if (readyState !== 'loaded') {
+                        handleError({type: 'error'});
+                    }
+                };
+                timeoutId = window.setTimeout(handleError, timeout, 'timeout');
     
                 element.type = 'text/javascript';
                 element.src = this.updateQueryString(params.jsonpUrl, params.callbackName, jsonpCallback);
@@ -90,7 +114,7 @@ define([
             },
             
             /**
-             * Appends the callback paramater to the existing url
+             * Appends the callback parameter to the existing url
              * @param {string} url
              * @param {string} key
              * @param {string} value

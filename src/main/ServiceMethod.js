@@ -30,7 +30,6 @@ define([
                 this.requestPayloadName = reader.getRequestPayloadName(this.name);
                 this.transport = reader.getMethodTransport(this.name);
                 this.smdMethod = reader.getMethod(this.name);
-                this.jsonpCallbackParameter = reader.getJsonpCallbackParameter();
             },
 
             /**
@@ -51,13 +50,14 @@ define([
                     provider = this.provider,
                     method = this.transport,
                     url = this.reader.getServiceUrl(this.name, params),
-                    jsonpCallbackParam = this.jsonpCallbackParameter,
+                    jsonpCallbackParam = this.reader.getJsonpCallbackParameter(),
                     smdReturn = this.reader.getResponseSchema(this.name),
                     payloadParamDef = this.reader.getRequestPayloadParam(this.name),
                     headers = {"Content-Type": "application/json"},
                     intermediate,
                     requestPayload = params.payload || params,
                     newParams = util.mixin({}, params),
+                    requestParams,
                     responseType = (smdReturn.type === "any" ? "blob" : "json"),
                     providerHandler = function (statusCode, data, ioArgs) {
                         var status = statusCode.toString(),
@@ -116,17 +116,22 @@ define([
                 }
 
                 logger.debug("Calling method [" + this.name + "] with URL: " + url);
-
-                newParams.request = provider[provider.httpMethodMap[method].method]({
+                
+                requestParams = {
                     url: url,
-                    jsonpCallbackParam: jsonpCallbackParam,
                     headers: headers,
                     payload: requestPayload,
                     handler: providerHandler,
                     onprogress: providerProgress,
                     asynchronous: params.asynchronous,
                     dontExecute: true
-                });
+                };
+                
+                if (jsonpCallbackParam) {
+                    requestParams.jsonpCallbackParam = jsonpCallbackParam;
+                }
+
+                newParams.request = provider[provider.httpMethodMap[method].method](requestParams);
 
                 if (smdReturn.type === "any") {
                     newParams.request.url = url;

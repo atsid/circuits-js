@@ -44,7 +44,7 @@ define([
                                 Ref = refResolver(value);
                                 value = typeof Ref === 'function' ? new Ref() : Ref;
                                 if (!util.isUndefined(value) && !value.resolved) {
-                                    value.resolved = true;
+                                    subobj.resolved = true;
                                     resolveRef(value, subobj, key);
                                 }
                                 parent[parentKey] = value;
@@ -211,7 +211,7 @@ define([
         },
 
         /**
-         * Gets the root target property for the service.
+         * Gets the jsonp callback property for the service.
          */
         getJsonpCallbackParameter: function () {
             return this.smd.jsonpCallbackParameter;
@@ -328,7 +328,7 @@ define([
 
         getAndValidateArgument: function (param, args) {
             args = args || {};
-            var arg = args[param.name] || param.default;
+            var arg = typeof args[param.name] !== "undefined" ? args[param.name] : param.default;
 
             if (typeof arg === "undefined" && (param.required === true || param.optional === false)) {
                 throw new Error("Missing required param for service call: " + param.name);
