@@ -148,7 +148,13 @@ require([
             });
             
             queue.call("Check results.", function (cbs) {
-                assertEquals(expected, ret.type);
+                try {
+                    assertEquals(expected, ret.type);
+                } catch (e) {
+                    jstestdriver.console.log(e);
+                    throw e;
+                }
+
             });
         }
     });

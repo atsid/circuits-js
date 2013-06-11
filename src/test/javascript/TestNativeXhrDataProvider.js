@@ -89,24 +89,18 @@ require([
             assertEquals(200, req.statusCode);
         });
 
-        /*
-         These tests don't work for the server started by maven. For some reason that server
-         returns a 200 even if the file doesn't exist. I'm not sure why. The server
-         run by webstorm for interactive test runs returns a 404 for this file. Maybe
-         they use different versions of the server. the tests aren't critical but I'm leaving
-         them.
-         queue.call("Execute an invalid service call.", function (cbs) {
-         var f2 = cbs.add(errorfn);
-         req = svc.readModel({modelname: "doesntexist.js"}, {
-         load: loadfn,
-         error: f2
-         });
-         });
+        queue.call("Execute an invalid service call.", function (cbs) {
+            var f2 = cbs.add(errorfn);
+            req = svc.readModel({modelname: "doesntexist.js"}, {
+                load: loadfn,
+                error: f2
+            });
+        });
 
-         queue.call("Check results.", function (cbs) {
-         assertEquals("ret not equal to error", "error", ret);
-         assertEquals("status code not 404", 404, req.statusCode);
-         });
-         */
+        queue.call("Check results.", function (cbs) {
+            assertEquals("ret not equal to error", "error", ret);
+            assertEquals("status code not 404", 404, req.statusCode);
+        });
+
     };
 });
