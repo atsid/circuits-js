@@ -1,16 +1,15 @@
 define([
     "./declare",
     "./util",
-    "./Logger"
+    "./log"
 ], function (
     declare,
     Util,
-    Logger
+    logger
 ) {
 
     var requestId = 0,
         util = new Util(),
-        logger = new Logger("debug"),
         module = declare("Request", null, {
             /**
              * @constructor

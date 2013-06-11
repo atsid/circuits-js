@@ -5,15 +5,14 @@
 define([
     "./declare",
     "./util",
-    "./Logger"
+    "./log"
 ], function (
     declare,
     Util,
-    Logger
+    logger
 ) {
 
     var util = new Util(),
-        logger = new Logger("info"),
         module = declare(null, {
 
         constructor: function () {

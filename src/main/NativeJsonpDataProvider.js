@@ -1,3 +1,4 @@
+/*global window */
 /**
  * @class circuits.NativeJsonpDataProvider
  *
@@ -7,15 +8,14 @@ define([
     "./declare",
     "./DataProvider",
     "./Request",
-    "./Logger"
+    "./log"
 ], function (
     declare,
     DataProvider,
     Request,
-    Logger
+    logger
 ) {
-    var logger = new Logger("debug"),
-        module = declare(DataProvider, {
+    var module = declare(DataProvider, {
         
             constructor: function (config) {
                 var that = this;

@@ -4,17 +4,16 @@
  * and attached to a circuits.Service for each method on the service.
  */
 define([
-    "./Logger",
+    "./log",
     "./util",
     "./declare"
 ], function (
-    Logger,
+    logger,
     Util,
     declare
 ) {
 
     var util = new Util(),
-        logger = new Logger("debug"),
         module = declare(null, {
             /**
              * @constructor

@@ -1,12 +1,13 @@
-/**
- * @class Logger
- * @extends Object
- * Logger for bullhorn. Provides methods for trace(), debug(), info(), warn() and error().
- * @param {String} logLevel Supported levels are TRACE, DEBUG, INFO, WARN, ERROR
- */
 define([
 ], function () {
-    var module = function (logLevel, alternateConsole, srcName) {
+
+    /**
+     * @class Logger
+     * @extends Object
+     * Simple logger for bullhorn. Provides methods for trace(), debug(), info(), warn() and error().
+     * @param {String} logLevel Supported levels are TRACE, DEBUG, INFO, WARN, ERROR
+     */
+    return function (logLevel, alternateConsole, srcName) {
 
         /**
          * @constructor Ensures that console is available if it isn't passed to constructor and sets log level.
@@ -150,6 +151,4 @@ define([
         };
         //end of constructor
     };
-
-    return module;
 });

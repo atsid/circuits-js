@@ -4,17 +4,16 @@
  */
 define([
     "../declare",
-    "../Logger",
+    "../log",
     "../Plugin",
     "dojo/store/util/SimpleQueryEngine"
 ], function (
     declare,
-    Logger,
+    logger,
     Plugin,
     QueryEngine
 ) {
-    var logger = new Logger("debug"),
-        module = declare(Plugin, {
+    var module = declare(Plugin, {
 
             constructor: function () {
 

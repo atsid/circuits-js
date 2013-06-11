@@ -33,14 +33,13 @@
 define([
     "./declare",
     "./util",
-    "./Logger"
+    "./log"
 ], function (
     declare,
     Util,
-    Logger
+    logger
 ) {
-    var logger = new Logger("debug"),
-        util = new Util(),
+    var util = new Util(),
         module = declare(null, {
         /**
          * Plugins accept a config object with the following known properties:

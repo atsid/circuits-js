@@ -7,18 +7,17 @@
  */
 define([
     "../util",
-    "../Logger",
+    "../log",
     "../Plugin",
     "../declare"
 ], function (
     Util,
-    Logger,
+    logger,
     Plugin,
     declare
 ) {
         
-        var logger = new Logger("debug"),
-            util = new Util(),
+        var util = new Util(),
             module = declare(Plugin, {
                 constructor: function () {
                     this.type = "mixin";

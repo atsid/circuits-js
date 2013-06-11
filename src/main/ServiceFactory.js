@@ -15,7 +15,7 @@ define([
     "./Service",
     "./PluginMatcher",
     "./util",
-    "./Logger",
+    "./log",
     "./ServiceQueue",
     "./NativeXhrDataProvider"
 ], function (
@@ -24,13 +24,12 @@ define([
     Service,
     PluginMatcher,
     Util,
-    Logger,
+    logger,
     ServiceQueue,
     NativeXhrDataProvider
 ) {
 
     var util = new Util(),
-        logger = new Logger("debug"),
         module = declare(null, {
             pluginMatcher: new PluginMatcher(),
 

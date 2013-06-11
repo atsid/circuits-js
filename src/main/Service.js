@@ -12,7 +12,7 @@ define([
     "./ServiceMethod",
     "./PluginMatcher",
     "./util",
-    "./Logger",
+    "./log",
     "./plugins/HandlerErrorPlugin",
     "./plugins/HandlerSuccessPlugin",
     "./NativeJsonpDataProvider"
@@ -21,14 +21,13 @@ define([
     ServiceMethod,
     PluginMatcher,
     Util,
-    Logger,
+    logger,
     HandlerErrorPlugin,
     HandlerSuccessPlugin,
     NativeJsonpDataProvider
 ) {
 
     var util = new Util(),
-        logger = new Logger("debug"),
         module = declare(null, {
             /**
              * @constructor

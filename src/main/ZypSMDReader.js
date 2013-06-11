@@ -5,19 +5,18 @@
 define([
     "./declare",
     "./ServiceDescriptorReader",
-    "./Logger",
+    "./log",
     "./util",
     "./AmdResolver"
 ], function (
     declare,
     ServiceDescriptorReader,
-    Logger,
+    logger,
     Util,
     AmdResolver
 ) {
 
-    var logger = new Logger("debug"),
-        util = new Util(),
+    var util = new Util(),
         module = declare(ServiceDescriptorReader, {
             /**
              * Constructor requires a JSONSchema-compliant SMD file in Zyp format.

@@ -3,14 +3,13 @@
  */
 define([
     "./declare",
-    "./Logger"
+    "./log"
 ], function (
     declare,
-    Logger
+    logger
 ) {
 
-    var logger = new Logger("debug"),
-        module = declare(null, {
+    var module = declare(null, {
 
             /**
              * Simple dojo.mixin replacement.
