@@ -33,8 +33,8 @@ define([
                 var jsonpCallback = 'jsonp' + new Date().getTime(),
                 request = new Request({
                     callbackName: params.jsonpCallbackParam,
-                    load: params.payload.load,
-                    error: params.payload.error,
+                    load: params.handler,
+                    error: params.handler,
                     jsonpCallback: jsonpCallback,
                     jsonpUrl: params.url,
                     timeout: params.timeout
@@ -81,7 +81,7 @@ define([
                         delete window[jsonpCallback];
                         headElement.removeChild(element);
                         if (error) {
-                            error({message: err});
+                            error("500", {message: err});
                         }
                     };
 
@@ -89,7 +89,7 @@ define([
                 window[jsonpCallback] = function (data) {
                     window.clearTimeout(timeoutId);
                     // TODO: add response validation here
-                    load(data);
+                    load("200", data);
                     delete window[jsonpCallback];
                     headElement.removeChild(element);
                 };

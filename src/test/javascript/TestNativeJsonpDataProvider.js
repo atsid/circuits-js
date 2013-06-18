@@ -83,7 +83,7 @@ require([
                 
             queue.call("Execute the jsonp invoke call.", function (cbs) {
                 var f1 = cbs.add(callbackFn);
-                req = svc.getModel({
+                req = svc.getModel({}, {
                     load: f1
                 });
             });
@@ -131,7 +131,7 @@ require([
         testScriptErrorDirectly: function (queue) {
             var expected = 'error',
                 ret,
-                errorFn = function (err) {
+                errorFn = function (status, err) {
                     ret = err.message;
                 };
                 
@@ -139,8 +139,8 @@ require([
                 var f1 = cbs.add(errorFn);
                 dataProvider.read({
                     payload: {
-                        error: f1
                     },
+                    handler: f1,
                     jsonpCallback: 'callback',
                     jsonpCallbackParam: 'callback',
                     url: '/test/src/test/data/nonexistentFile.json'

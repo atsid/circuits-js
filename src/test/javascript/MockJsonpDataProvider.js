@@ -38,7 +38,7 @@ define([
                     delete window[jsonpCallback];
                     headElement.removeChild(element);
                     if (error) {
-                        error({message: err});
+                        error("500", {message: err});
                     }
                 };
 
@@ -46,7 +46,7 @@ define([
             window[jsonpCallback] = function (data) {
                 window.clearTimeout(timeoutId);
                 // TODO: add response validation here
-                load(data);
+                load("200", data);
                 delete window[jsonpCallback];
                 headElement.removeChild(element);
             };
