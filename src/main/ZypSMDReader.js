@@ -327,7 +327,7 @@ define([
 
         getAndValidateArgument: function (param, args) {
             args = args || {};
-            var arg = typeof args[param.name] !== "undefined" ? args[param.name] : param.default;
+            var arg = typeof args[param.name] !== "undefined" ? args[param.name] : param["default"];
 
             if (typeof arg === "undefined" && (param.required === true || param.optional === false)) {
                 throw new Error("Missing required param for service call: " + param.name);
