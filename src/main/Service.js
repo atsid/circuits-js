@@ -15,7 +15,8 @@ define([
     "./log",
     "./plugins/HandlerErrorPlugin",
     "./plugins/HandlerSuccessPlugin",
-    "./NativeJsonpDataProvider"
+    "./NativeJsonpDataProvider",    
+    "./plugins/HandlerTimeoutPlugin"
 ], function (
     declare,
     ServiceMethod,
@@ -24,7 +25,8 @@ define([
     logger,
     HandlerErrorPlugin,
     HandlerSuccessPlugin,
-    NativeJsonpDataProvider
+    NativeJsonpDataProvider,
+    HandlerTimeoutPlugin
 ) {
 
     var util = new Util(),
