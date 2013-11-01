@@ -4,17 +4,16 @@
  * and attached to a circuits.Service for each method on the service.
  */
 define([
-    "./Logger",
+    "./log",
     "./util",
     "./declare"
 ], function (
-    Logger,
+    logger,
     Util,
     declare
 ) {
 
     var util = new Util(),
-        logger = new Logger("debug"),
         module = declare(null, {
             /**
              * @constructor
@@ -50,11 +49,13 @@ define([
                     provider = this.provider,
                     method = this.transport,
                     url = this.reader.getServiceUrl(this.name, params),
+                    jsonpCallbackParam = this.reader.getJsonpCallbackParameter(),
                     smdReturn = this.reader.getResponseSchema(this.name),
                     payloadParamDef = this.reader.getRequestPayloadParam(this.name),
                     headers,
                     requestPayload = params.payload || params,
                     newParams = util.mixin({}, params),
+                    requestParams,
                     responseType = (smdReturn.type === "any" ? "blob" : "json"),
                     timeout = this.reader.getMethodTimeout(this.name),
                     providerHandler = function (statusCode, data, ioArgs) {
@@ -108,8 +109,8 @@ define([
                 }
 
                 logger.debug("Calling method [" + this.name + "] with URL: " + url);
-
-                newParams.request = provider[provider.httpMethodMap[method].method]({
+                
+                requestParams = {
                     url: url,
                     headers: headers,
                     payload: requestPayload,
@@ -118,7 +119,13 @@ define([
                     asynchronous: params.asynchronous,
                     timeout: timeout || "none",
                     dontExecute: true
-                });
+                };
+                
+                if (jsonpCallbackParam) {
+                    requestParams.jsonpCallbackParam = jsonpCallbackParam;
+                }
+
+                newParams.request = provider[provider.httpMethodMap[method].method](requestParams);
 
                 if (smdReturn.type === "any") {
                     newParams.request.url = url;
@@ -191,7 +198,6 @@ define([
                 //TODO: "any" is JSONSchema default if no type is defined. this should come through a model though so we aren't tacking it on everywhere
                     returnType = this.reader.getResponseSchema(this.name).type || "any", //this could fail if there is no "returns" block on the method
                     payload,
-                    items,
                     that = this,
                     intermediate,
                     successfulResponsePattern = '(2|3)\\d\\d';

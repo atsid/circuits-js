@@ -6,18 +6,17 @@
 define([
     "dojo",
     "./declare",
-    "./Logger",
+    "./log",
     "./DataProvider",
     "./Request"
 ], function (
     dojo,
-    delcare,
-    Logger,
+    declare,
+    logger,
     DataProvider,
     Request
 ) {
-    var logger = new Logger("debug"),
-        module = declare(DataProvider, {
+    var module = declare(DataProvider, {
             test: function (url) {
                 var ret = true, xhr;
                 try {

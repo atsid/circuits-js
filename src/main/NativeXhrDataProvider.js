@@ -7,15 +7,14 @@ define([
     "./declare",
     "./DataProvider",
     "./Request",
-    "./Logger"
+    "./log"
 ], function (
     declare,
     DataProvider,
     Request,
-    Logger
+    logger
 ) {
-    var logger = new Logger("debug"),
-        module = declare(DataProvider, {
+    var module = declare(DataProvider, {
 
         /**
          * @constructor - warn on level compliance
@@ -25,8 +24,7 @@ define([
             if (!test.upload) {
                 logger.warn("NativeXhrDataProvider: This runtime is not XHR level 2 compliant.");
             }
-            this.asynchronous = (config && typeof (config.asynchronous) === 'boolean')
-                ? config.asynchronous : true;
+            this.asynchronous = (config && typeof (config.asynchronous) === 'boolean') ? config.asynchronous : true;
             this.hitchedInvoke = function () {
                 that.invokeXhrSend.apply(that, arguments);
             };
@@ -148,6 +146,15 @@ define([
             return request;
 
         },
+        
+        /**
+         * @param {string} transport
+         * @return {boolean} 
+         * @overrides
+         */
+        supportsTransport: function (transport) {
+            return transport === 'REST';
+        },
 
         /**
          * Perform the actual XMLHttpRequest call, interpreting the params as necessary.
@@ -174,8 +181,7 @@ define([
          */
         invokeXhrSend: function (params) {
             var xhr = new XMLHttpRequest(),
-                async = typeof (params.asynchronous) === "boolean"
-                    ? params.asynchronous : this.asynchronous,
+                async = typeof (params.asynchronous) === "boolean" ? params.asynchronous : this.asynchronous,
 
                 readystatechange = function () {
                     if (params.onreadystatechange) {
@@ -212,7 +218,7 @@ define([
             }
 
             xhr.open(params.method, params.url, async);
-            Object.keys((params.headers || {})).forEach(function (val, idx, obj) {
+            Object.keys((params.headers || {})).forEach(function (val) {
                 if (!(val === "Content-Type" && params.headers[val] === "multipart/form-data")) {
                     xhr.setRequestHeader(val, params.headers[val]);
                 }
@@ -220,7 +226,7 @@ define([
 
             // If level 2, then attach the handlers directly.
             if (xhr.upload) {
-                Object.keys(params).forEach(function (key, idx, obj) {
+                Object.keys(params).forEach(function (key) {
                     if (key.indexOf("on") === 0 && typeof (params[key]) === 'function') {
                         if (typeof (xhr[key]) !== 'undefined') {
                             xhr[key] = params[key];

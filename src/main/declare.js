@@ -308,7 +308,7 @@ define([
 
     // emulation of "instanceof"
     function isInstanceOf(cls) {
-        var i, bases = this.constructor._meta.bases;
+        var i, l, bases = this.constructor._meta.bases;
         for (i = 0, l = bases.length; i < l; i += 1) {
             if (bases[i] === cls) {
                 return true;

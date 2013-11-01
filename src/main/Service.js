@@ -12,23 +12,22 @@ define([
     "./ServiceMethod",
     "./PluginMatcher",
     "./util",
-    "./Logger",
+    "./log",
     "./plugins/HandlerErrorPlugin",
     "./plugins/HandlerSuccessPlugin",
-    "./plugins/HandlerTimeoutPlugin"
+    "./NativeJsonpDataProvider"
 ], function (
     declare,
     ServiceMethod,
     PluginMatcher,
     Util,
-    Logger,
+    logger,
     HandlerErrorPlugin,
     HandlerSuccessPlugin,
-    HandlerTimeoutPlugin
+    NativeJsonpDataProvider
 ) {
 
     var util = new Util(),
-        logger = new Logger("debug"),
         module = declare(null, {
             /**
              * @constructor
@@ -41,7 +40,8 @@ define([
                 var that = this,
                     methodsHash = {},
                     methodsArr = [],
-                    schemaId = reader.getSchemaId();
+                    schemaId = reader.getSchemaId(),
+                    transport = reader.getTransport();
 
                 logger.debug("Creating new Service based on schema: " + schemaId);
                 logger.debug("Got service plugins", servicePlugins);
@@ -51,6 +51,16 @@ define([
                 this.factoryPlugins = factoryPlugins;
                 this.plugins = servicePlugins;
                 this.pluginMatcher = new PluginMatcher();
+                
+                //if JSONP transport is not supported by the existing provider
+                if (transport === 'JSONP' && !provider.supportsTransport('JSONP')) {
+                    this.addPlugin({
+                        type: 'provider',
+                        fn: function () {
+                            return new NativeJsonpDataProvider({});
+                        }
+                    });
+                }
 
                 //instantiate and hash ServiceMethods on the Service
                 reader.getMethodNames().forEach(function (methodName) {
@@ -88,7 +98,7 @@ define([
                  * @return {Array} the array of plugins converted if necessary.
                  */
                 this.convertCallbackParam = function (param) {
-                    var ret = param || [], scope, plugin;
+                    var ret = param || [], plugin;
 
                     if (param && Object.prototype.toString.call(param) !== "[object Array]") {
                         ret = [];

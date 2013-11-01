@@ -5,89 +5,86 @@
 define([
     "./declare",
     "./ServiceDescriptorReader",
-    "./Logger",
+    "./log",
     "./util",
     "./AmdResolver"
 ], function (
     declare,
     ServiceDescriptorReader,
-    Logger,
+    logger,
     Util,
     AmdResolver
 ) {
 
-    var logger = new Logger("debug"),
-        util = new Util(),
+    var util = new Util(),
         module = declare(ServiceDescriptorReader, {
-        /**
-         * Constructor requires a JSONSchema-compliant SMD file in Zyp format.
-         */
-        constructor: function (schema, refResolver) {
+            /**
+             * Constructor requires a JSONSchema-compliant SMD file in Zyp format.
+             */
+            constructor: function (schema, refResolver) {
 
-            logger.debug("Creating reader for schema", schema);
+                logger.debug("Creating reader for schema", schema);
 
-            if (!refResolver) {
-                refResolver = new AmdResolver({path: "", altSeparator: "\\.", synchronous: true}).resolver;
-            }
-
-            this.smd = schema;
-
-            //finds all $ref instances and replaces with the actual object
-            //similar to dojox.json.ref.resolveJson, but doesn't get hung up on circular references
-            function resolveRef(subobj, parent, parentKey) {
-
-                Object.keys(subobj).forEach(function (key, idx, obj) {
-                    var Ref, value = subobj[key];
-                    if (key === "$ref") {
-                        logger.debug("Resolving $ref: " + value);
-                        Ref = refResolver(value);
-                        value = typeof Ref === 'function' ? new Ref() : Ref;
-                        if (!util.isUndefined(value) && !(value.tag && value.tag.resolved)) {
-                            if (!value.tag) {
-                                value.tag = {};
-                            }
-                            value.tag.resolved = true;
-                            resolveRef(value, subobj, key);
-                        }
-                        parent[parentKey] = value;
-                    } else if (typeof value === "object") {
-                        resolveRef(value, subobj, key);
-                    }
-
-                });
-            }
-
-            function getExtendedProperties(obj, props) {
-                var parent = (obj && obj["extends"]), propsObj = [], items = [];
-
-                if (typeof parent !== "undefined") {
-
-                    items = util.isArray(parent) ? parent : [parent]; //can be multiple-inheritance
-
-                    items.forEach(function (item) {
-
-                        Object.keys(item.properties).forEach(function (key, idx, o) {
-                            var value = item.properties[key];
-                            if (key !== "__parent") {
-                                propsObj.push({
-                                    parentId: item.id,
-                                    key: key,
-                                    value: value
-                                });
-                            }
-                        });
-
-                    }, this);
-
-                    props.push(propsObj);
-                    props = getExtendedProperties(parent, props);
+                if (!refResolver) {
+                    refResolver = new AmdResolver({path: "", altSeparator: "\\.", synchronous: true}).resolver;
                 }
 
-                return props;
+                this.smd = schema;
 
-            }
+                //finds all $ref instances and replaces with the actual object
+                //similar to dojox.json.ref.resolveJson, but doesn't get hung up on circular references
+                //TODO: should we assume all schemas have been resolved prior, and remove this step?
+                function resolveRef(subobj, parent, parentKey) {
+                    if (!subobj.resolved) {
+                        Object.keys(subobj).forEach(function (key) {
+                            var Ref, value = subobj[key];
+                            if (key === "$ref") {
+                                logger.debug("Resolving $ref: " + value);
+                                Ref = refResolver(value);
+                                value = typeof Ref === 'function' ? new Ref() : Ref;
+                                if (!util.isUndefined(value) && !value.resolved) {
+                                    subobj.resolved = true;
+                                    resolveRef(value, subobj, key);
+                                }
+                                parent[parentKey] = value;
+                            } else if (typeof value === "object") {
+                                resolveRef(value, subobj, key);
+                            }
+                        });
+                    }
+                }
 
-            //looks in JSONSchema objects for "extends" and copies properties to children
+                function getExtendedProperties(obj, props) {
+                    var parent = (obj && obj["extends"]), propsObj = [], items = [], itemProps;
+
+                    if (typeof parent !== "undefined") {
+
+                        items = util.isArray(parent) ? parent : [parent]; //can be multiple-inheritance
+
+                        items.forEach(function (item) {
+                            itemProps = item.properties || {};
+                            Object.keys(itemProps).forEach(function (key) {
+                                var value = item.properties[key];
+                                if (key !== "__parent") {
+                                    propsObj.push({
+                                        parentId: item.id,
+                                        key: key,
+                                        value: value
+                                    });
+                                }
+                            });
+
+                        }, this);
+
+                        props.push(propsObj);
+                        props = getExtendedProperties(parent, props);
+                    }
+
+                    return props;
+
+                }
+
+                //looks in JSONSchema objects for "extends" and copies properties to children
             function resolveExtensions(schema) {
 
                 var xprops, props;
@@ -126,7 +123,7 @@ define([
                 // resolve inherited global parameters
                 resolveExtendedParameters(schema);
 
-                Object.keys(schema.services || {}).forEach(function (key, idx, obj) {
+                Object.keys(schema.services || {}).forEach(function (key) {
                     var value = schema.services[key];
                     //value.target = value.target ? schema.target + value.target : schema.target; //TODO: should this build concat paths? that is currently handled in getServiceUrl function
                     value.returns = value.returns || schema.returns;
@@ -139,10 +136,13 @@ define([
                         resolveExtensions(value.returns);
                     }
 
-                    value.parameters && value.parameters.forEach(function (item) {
-                        item.envelope = item.envelope || value.envelope;
-                        item.description = item.description || "";
-                    });
+                    if (value.parameters) {
+                        value.parameters.forEach(function (item) {
+                            item.envelope = item.envelope || value.envelope;
+                            item.description = item.description || "";
+                        });
+                    }
+
 
                     var ext = value["extends"];
 
@@ -168,13 +168,14 @@ define([
                 schema.tag.resolved = true;
             }
 
-            //only resolve these once, or else our concats will be a problem
-            if (!(schema.tag && schema.tag.resolved)) {
-
+            //if a schema has already been resolved, don't do it again - we can get into endless recursion
+            if (!schema.resolved) {
                 resolveRef(schema, null, null);
+                schema.resolved = true;
+            }
 
-                logger.debug("Resolved schema $refs", schema);
-
+            //only resolve these once, or else our concats will be a problem
+            if (!schema.resolvedProperties) {
                 resolveProperties(schema);
             }
 
@@ -212,12 +213,26 @@ define([
         },
 
         /**
+         * Gets the jsonp callback property for the service.
+         */
+        getJsonpCallbackParameter: function () {
+            return this.smd.jsonpCallbackParameter;
+        },
+        
+        /**
+         * Gets the transport property for the service.
+         */
+        getTransport: function () {
+            return this.smd.transport;
+        },
+        
+        /**
          * Gets a list of the service method names defined by the SMD.
          */
         getMethodNames: function () {
             var names = [];
 
-            Object.keys(this.smd.services || {}).forEach(function (serviceName, idx, obj) {
+            Object.keys(this.smd.services || {}).forEach(function (serviceName) {
                 names.push(serviceName);
             });
 
@@ -230,7 +245,7 @@ define([
         getMethods: function () {
             var services = [], smdServices = this.smd.services;
 
-            Object.keys(smdServices || []).forEach(function (serviceName, idx, obj) {
+            Object.keys(smdServices || []).forEach(function (serviceName) {
                 services.push(smdServices[serviceName]);
             });
 
@@ -319,9 +334,9 @@ define([
 
         getAndValidateArgument: function (param, args) {
             args = args || {};
-            var arg = args[param.name];
+            var arg = typeof args[param.name] !== "undefined" ? args[param.name] : param["default"];
 
-            if (typeof arg === "undefined" && param.required === true) {
+            if (typeof arg === "undefined" && (param.required === true || param.optional === false)) {
                 throw new Error("Missing required param for service call: " + param.name);
             }
 

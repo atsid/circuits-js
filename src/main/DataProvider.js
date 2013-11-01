@@ -54,6 +54,13 @@ define([
         del: function (params) {
             throw new Error("Must implement DataProvider.del()");
         },
+        
+        /**
+         * Transport support check.
+         * @param {string} transport The transport to check
+         * @return {boolean} If the transport is supported
+         */
+        supportsTransport: function (transport) {},
 
         /**
          * Map of protocol methods to data provider methods.
@@ -62,7 +69,8 @@ define([
             'GET': {method: 'read', hasPayload: false},
             'POST': {method: 'create', hasPayload: true},
             'PUT': {method: 'update', hasPayload: true},
-            'DELETE': {method: 'del', hasPayload: false}
+            'DELETE': {method: 'del', hasPayload: false},
+            'JSONP': {method: 'read', hasPayload: false}
         }
     });
 
