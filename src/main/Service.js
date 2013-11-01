@@ -14,7 +14,8 @@ define([
     "./util",
     "./Logger",
     "./plugins/HandlerErrorPlugin",
-    "./plugins/HandlerSuccessPlugin"
+    "./plugins/HandlerSuccessPlugin",
+    "./plugins/HandlerTimeoutPlugin"
 ], function (
     declare,
     ServiceMethod,
@@ -22,7 +23,8 @@ define([
     Util,
     Logger,
     HandlerErrorPlugin,
-    HandlerSuccessPlugin
+    HandlerSuccessPlugin,
+    HandlerTimeoutPlugin
 ) {
 
     var util = new Util(),
@@ -90,6 +92,12 @@ define([
 
                     if (param && Object.prototype.toString.call(param) !== "[object Array]") {
                         ret = [];
+                        if (param.timeout) {
+                            logger.debug("Generating handler plugin on timeout (timeout)");
+                            plugin = {name: 'generatedHandlerTimeout', fn: param.timeout};
+                            plugin.scope = param.scope || plugin;
+                            ret.push(new HandlerTimeoutPlugin(plugin));
+                        }
                         if (param.load) {
                             logger.debug("Generating handler plugin on load (load)");
                             plugin = {name: 'generatedHandlerSuccess', fn: param.load};
@@ -101,6 +109,12 @@ define([
                             plugin = {name: 'generatedHandlerError', fn: param.error};
                             plugin.scope = param.scope || plugin;
                             ret.push(new HandlerErrorPlugin(plugin));
+                        }
+                        if (param.onTimeout) {
+                            logger.debug("Generating handler plugin on timeout (onTimeout)");
+                            plugin = {name: 'generatedHandlerTimeout', fn: param.timeout};
+                            plugin.scope = param.scope || plugin;
+                            ret.push(new HandlerTimeoutPlugin(plugin));
                         }
                         if (param.onLoad) {
                             logger.debug("Generating handler plugin on load (onLoad)");

@@ -1,8 +1,8 @@
 /**
- * @class circuits.NativeXhrDataProvider
- *
- * Data provider implementation that wraps the native XmlHttpRequest.
- */
+* @class circuits.NativeXhrDataProvider
+*
+* Data provider implementation that wraps the native XmlHttpRequest.
+*/
 define([
     "./declare",
     "./DataProvider",
@@ -68,7 +68,8 @@ define([
                 asynchronous: params.asynchronous,
                 responseType: params.responseType || "json",
                 onprogress: params.onprogress || this.defaultOnProgress,
-                handler: params.handler || this.defaultHandler
+                handler: params.handler || this.defaultHandler,
+                timeout: params.timeout || "none"
             }, this.hitchedInvoke);
 
             logger.debug("Xhr-based store executing POST to " + params.url, payload);
@@ -86,7 +87,8 @@ define([
                 method: "GET",
                 asynchronous: params.asynchronous,
                 handler: params.handler || this.defaultHandler,
-                responseType: params.responseType || "json"
+                responseType: params.responseType || "json",
+                timeout: params.timeout || "none"
             }, this.hitchedInvoke);
 
             logger.debug("Xhr-based store executing GET to " + params.url);
@@ -116,7 +118,8 @@ define([
                 headers: params.headers || { "Content-Type": contentType},
                 payload: payload,
                 responseType: params.responseType || "json",
-                handler: params.handler || this.defaultHandler
+                handler: params.handler || this.defaultHandler,
+                timeout: params.timeout || "none"
             }, this.hitchedInvoke);
 
             logger.debug("Xhr-based store executing PUT to " + params.url, payload);
@@ -133,7 +136,8 @@ define([
                 asynchronous: params.asynchronous,
                 method: "DELETE",
                 handler: params.handler || this.defaultHandler,
-                responseType: params.responseType || "json"
+                responseType: params.responseType || "json",
+                timeout: params.timeout || "none"
             }, this.hitchedInvoke);
 
             logger.debug("Xhr-based store executing DELETE to " + params.url);
@@ -190,7 +194,7 @@ define([
                                     }
                                 }
 
-                                params.handler.call(this, this.status, resp, params);
+                                params.handler.call(this, (xhr.timedOut) ? -1 : this.status, resp, params);
                             }
                         }
                     }
@@ -198,10 +202,7 @@ define([
 
             // setup pre-open parameters
             params.xhr = xhr;
-            if (params.timeout && typeof (xhr.timeout) === 'number') {
-                xhr.timeout = params.timeout;
-            }
-
+            
             if (params.responseType && typeof (xhr.responseType) === 'string') {
                 // types for level 2 are still draft. Don't attempt to set until
                 // support is more universal.
@@ -234,7 +235,20 @@ define([
             if (params.handler || params.onreadystatechange) {
                 xhr.onreadystatechange = readystatechange;
             }
-
+            
+            if (params.timeout && typeof (params.timeout) === 'number') {
+                xhr.timeout = params.timeout;
+                xhr.ontimeout = function () {
+                    xhr.timedOut = true;
+                    xhr.abort();
+                };
+                setTimeout(function () {  /* vs. xhr.timeout */
+                    this.response = {}
+                    if (xhr.readyState < 4) {
+                        xhr.ontimeout();
+                    }
+                },  xhr.timeout);
+            }
             xhr.send(params.payload);
         },
 

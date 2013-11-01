@@ -34,7 +34,6 @@ define([
 
             //finds all $ref instances and replaces with the actual object
             //similar to dojox.json.ref.resolveJson, but doesn't get hung up on circular references
-            //TODO: should we assume all schemas have been resolved prior, and remove this step?
             function resolveRef(subobj, parent, parentKey) {
 
                 Object.keys(subobj).forEach(function (key, idx, obj) {
@@ -43,8 +42,11 @@ define([
                         logger.debug("Resolving $ref: " + value);
                         Ref = refResolver(value);
                         value = typeof Ref === 'function' ? new Ref() : Ref;
-                        if (!util.isUndefined(value) && !value.resolved) {
-                            value.resolved = true;
+                        if (!util.isUndefined(value) && !(value.tag && value.tag.resolved)) {
+                            if (!value.tag) {
+                                value.tag = {};
+                            }
+                            value.tag.resolved = true;
                             resolveRef(value, subobj, key);
                         }
                         parent[parentKey] = value;
@@ -95,7 +97,7 @@ define([
                 //unwind the property stack so that the earliest gets inheritance link
                 schema.properties = schema.properties || {};
                 function copyprop(item) { //util to get around jslint complaints about doing this directly in loop
-                    schema.properties[item.key] = item.value;
+                    schema.properties[item.key] = item.val;
                 }
 
                 while (xprops.length > 0) {
@@ -160,17 +162,20 @@ define([
                     }
                 });
 
+                if (!schema.tag) {
+                    schema.tag = {};
+                }
+                schema.tag.resolved = true;
             }
 
             //only resolve these once, or else our concats will be a problem
-            if (!schema.resolved) {
-                resolveRef(schema, null, null);
-                schema.resolved = true;
-            }
+            if (!(schema.tag && schema.tag.resolved)) {
 
-            if (!schema.resolvedProperties) {
+                resolveRef(schema, null, null);
+
+                logger.debug("Resolved schema $refs", schema);
+
                 resolveProperties(schema);
-                schema.resolvedProperties = true;
             }
 
             var hash = {};
@@ -306,6 +311,10 @@ define([
 
         getMethodTransport: function (methodName) {
             return this.smd.services[methodName].transport;
+        },
+        
+        getMethodTimeout: function (methodName) {
+            return this.smd.services[methodName].timeout;
         },
 
         getAndValidateArgument: function (param, args) {
