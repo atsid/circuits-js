@@ -221,7 +221,7 @@ define([
 
                     payload = data;
 
-                    if (this.responsePayloadName !== null && data[this.responsePayloadName]) {
+                    if (this.responsePayloadName && data && data[this.responsePayloadName]) {
 
                         payload = data[this.responsePayloadName];
 

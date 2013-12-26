@@ -146,10 +146,10 @@ define([
             return request;
 
         },
-        
+
         /**
          * @param {string} transport
-         * @return {boolean} 
+         * @return {boolean}
          * @overrides
          */
         supportsTransport: function (transport) {
@@ -189,7 +189,10 @@ define([
                     } else {
                         if (this.readyState === this.DONE) {
                             if (!this.loadcalled) { // prevent multiple done calls from xhr.
-                                var resp = this.response || this.responseText;
+                                var resp;
+                                if (!xhr.timedOut) {
+                                    resp = this.response || this.responseText;
+                                }
                                 this.loadcalled = true;
                                 if (resp && !this.responseType &&
                                         params.responseType === "json") {
@@ -208,7 +211,7 @@ define([
 
             // setup pre-open parameters
             params.xhr = xhr;
-            
+
             if (params.responseType && typeof (xhr.responseType) === 'string') {
                 // types for level 2 are still draft. Don't attempt to set until
                 // support is more universal.
@@ -241,7 +244,7 @@ define([
             if (params.handler || params.onreadystatechange) {
                 xhr.onreadystatechange = readystatechange;
             }
-            
+
             if (params.timeout && typeof (params.timeout) === 'number') {
                 xhr.timeout = params.timeout;
                 xhr.ontimeout = function () {
@@ -250,7 +253,7 @@ define([
                 };
                 setTimeout(function () {  /* vs. xhr.timeout */
                     this.response = {}
-                    if (xhr.readyState < 4) {
+                    if (xhr.readyState < 4 && !xhr.timedOut) {
                         xhr.ontimeout();
                     }
                 },  xhr.timeout);

@@ -50,7 +50,7 @@ define([
                 //wrap the handler callbacks in a cancel check
                 function handler(responseCode, data, ioArgs) {
                     that.xhr = ioArgs.xhr;
-                    that.statusCode = that.xhr && that.xhr.status;
+                    that.statusCode = that.xhr && !that.xhr.timedOut && that.xhr.status || 0;
                     if (that.canceled) {
                         logger.debug("Request [" + that.id + "] was canceled, not calling handler");
                     } else {
