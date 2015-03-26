@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/github/atsid/circuits-js/badges/gpa.svg)](https://codeclimate.com/github/atsid/circuits-js)
+
 # circuits-js
 An SMD based service library.
 
