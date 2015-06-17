@@ -126,7 +126,8 @@ define([
                 }
 
                 newParams.request = provider[provider.httpMethodMap[method].method](requestParams);
-
+                newParams.response = that.reader.smd.services[that.name];
+                
                 if (smdReturn.type === "any") {
                     newParams.request.url = url;
                     newParams.request.mediaType = this.smdMethod.contentType || "";
