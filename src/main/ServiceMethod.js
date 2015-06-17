@@ -65,6 +65,8 @@ define([
 
                         //add the total from the payload if it is an array response. putting it in the request object, as that is where http status, etc. is stored.
                         newParams.request.total = data && data.total;
+                        
+                        newParams.response = data;
 
                         //links should be sitting alonside the actual payload, like the total.
                         newParams.links = data && data.links;
@@ -126,7 +128,7 @@ define([
                 }
 
                 newParams.request = provider[provider.httpMethodMap[method].method](requestParams);
-                newParams.response = that.reader.smd.services[that.name];
+              
                 
                 if (smdReturn.type === "any") {
                     newParams.request.url = url;
