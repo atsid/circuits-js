@@ -98,6 +98,7 @@ require([
                                 assertEquals("90009528", data.caseNumber);
                                 assertUndefined(params.request.total); //single item response, should have undefined total
                                 assertEquals(2, params.links.length);
+                                assertEquals(singleResponse, params.response);
                             }
                         }]
                     });
@@ -145,6 +146,7 @@ require([
                                 assertEquals("1", data.caseNumber); //we've transformed the case number in the read processor
                                 assertTrue(data.justRead);
                                 assertUndefined(params.request.total); //single item response, should have undefined total
+                                assertEquals(singleResponse, params.response);
                             }
                         }
                     ]
@@ -169,6 +171,7 @@ require([
                                     assertEquals(10, params.request.total);
                                     assertEquals("90009528", data[0].caseNumber);
                                     assertEquals("90009529", data[1].caseNumber);
+                                    assertEquals(myListResponse, params.response);
                                 }
                             }
                         ]
