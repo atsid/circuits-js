@@ -99,16 +99,14 @@ define([
                     provider = provider.fn.call(provider.scope || provider, this);
                 }
 
-                // Only execute payload plugins if the method expects a payload.
-                if (provider.httpMethodMap[method].hasPayload) {
-                    // add Content-Type header if there is a payload and it has an enctype.
-                    if (payloadParamDef && payloadParamDef.enctype) {
-                        headers = {"Content-Type": payloadParamDef.enctype};
-                        // it's a regular payload so process it.
-                    } else {
-                        requestPayload = this.processRequest(requestPayload, plugins);
-                    }
-                }
+               
+                // add Content-Type header if there is a payload and it has an enctype.
+                if (payloadParamDef && payloadParamDef.enctype) {
+                    headers = {"Content-Type": payloadParamDef.enctype};
+                    // it's a regular payload so process it.
+                } else {
+                    requestPayload = this.processRequest(requestPayload, plugins);
+                }                
 
                 logger.debug("Calling method [" + this.name + "] with URL: " + url);
                 
