@@ -4,7 +4,7 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         jshint: {
-            src: ['js/**/*.js', 'test/**/*.js', '!node_modules/**/*.*'],
+            src: ['main/**/*.js', 'test-mocha/**/*.js', '!node_modules/**/*.*'],
             options: {
                 jshintrc: '.jshintrc'
             }
@@ -17,7 +17,7 @@ module.exports = function (grunt) {
         },
         watch: {
             js: {
-                files: ['**/*.js', '!**/node_modules/**'],
+                files: ['main/**/*.js', '!**/node_modules/**'],
                 tasks: ['lint', 'test']
             }
         },
