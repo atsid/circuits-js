@@ -16,7 +16,7 @@ module.exports = function(config) {
     files: [
         'src/test-mocha/test-main.js',
         {pattern: 'src/main/**/*.js', included: false},
-        {pattern: 'src/test-mocha/**/*.js', included: false}
+        {pattern: 'src/test-mocha/**/*.js', included: true}
     ],
 
 
