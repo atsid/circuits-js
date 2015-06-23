@@ -1,3 +1,3 @@
 {
-    "modelNumber": "123"
+    modelNumber : "123"
 }
