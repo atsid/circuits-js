@@ -24,7 +24,6 @@ define([
     "Schema/responses/BaseResponse",
     "Schema/responses/CaseListResponse",
     "Schema/responses/CaseResponse",
-    "Schema/responses/ListResponse",
     "Schema/services/CaseService",
     "Schema/services/PagingServiceMethod",
     "Schema/responses/ListResponse",
