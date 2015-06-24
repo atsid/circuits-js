@@ -24,13 +24,7 @@ requirejs.config({
         'test': 'test',
         'Schema': 'test/data/schema'
     },
-    /*
-    map: {
-        "*": {
-            "circuits/Validator": "test/MockValidator"
-        }
-    },
-    //*/
+    
     // ask Require.js to load these files (all our tests)
     deps: allTestFiles,
 
