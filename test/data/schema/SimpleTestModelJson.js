@@ -1,3 +1,5 @@
-{
-    modelNumber : "123"
-}
+define([], function () {
+    return {
+        "modelNumber" : "123"
+    }
+});
