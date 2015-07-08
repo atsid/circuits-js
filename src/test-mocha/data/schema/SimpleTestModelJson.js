@@ -1,3 +1,0 @@
-{
-    modelNumber : "123"
-}

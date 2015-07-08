@@ -1,5 +1,0 @@
-define([
-    "./pluginpack",
-    "./ServiceFactory"
-], function() {
-});
