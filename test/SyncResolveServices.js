@@ -28,7 +28,8 @@ define([
     "Schema/services/PagingServiceMethod",
     "Schema/responses/ListResponse",
     "Schema/responses/SimpleTestModelListResponse",
-    "Schema/responses/SimpleTestModelResponse"
+    "Schema/responses/SimpleTestModelResponse",
+    "Schema/SimpleTestModelJson"
 ], function (
     BinaryObjectService,
     GlobalParamsSchema,
@@ -52,7 +53,8 @@ define([
     CaseService,
     PagingServiceMethod,
     SimpleTestModelListResponse,
-    SimpleTestModelResponse
+    SimpleTestModelResponse,
+    SimpleTestModelJson
 ) {
 
     var schemas = {
@@ -78,7 +80,9 @@ define([
             "Schema/services/CaseService":  CaseService,
             "Schema/services/PagingServiceMethod":  PagingServiceMethod,
             "Schema/responses/SimpleTestModelListResponse":  SimpleTestModelListResponse,
-            "Schema/responses/SimpleTestModelResponse":  SimpleTestModelResponse
+            "Schema/responses/SimpleTestModelResponse":  SimpleTestModelResponse,
+            "Schema/SimpleTestModelJson": SimpleTestModelJson
+            
         },
         resolve = function (name) {
             return schemas[name];
