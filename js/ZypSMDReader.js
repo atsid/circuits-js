@@ -47,7 +47,8 @@ define([
                                     resolveRef(value, subobj, key);
                                 }
                                 parent[parentKey] = value;
-                            } else if (typeof value === "object") {
+                            } else if (typeof value === "object" && !value.resolved) {
+                                subobj.resolved = true;
                                 resolveRef(value, subobj, key);
                             }
                         });
