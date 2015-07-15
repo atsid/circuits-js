@@ -54,6 +54,7 @@ define([
                         });
                     }
                 }
+                //*/
 
                 function getExtendedProperties(obj, props) {
                     var parent = (obj && obj["extends"]), propsObj = [], items = [], itemProps;
@@ -167,6 +168,7 @@ define([
                     schema.tag = {};
                 }
                 schema.tag.resolved = true;
+                schema.resolvedProperties=true;
             }
 
             //if a schema has already been resolved, don't do it again - we can get into endless recursion
