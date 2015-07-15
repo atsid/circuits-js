@@ -295,11 +295,14 @@ define([
          * Indicates whether the specified argument on a service method is required or not.
          */
         isArgumentRequired: function (methodName, argName) {
-            var required = this.findParameter(methodName, argName).required;
-            //default is false, so if "required" is undefined, return false anyway
-            if (required) {
-                return true;
+            if(!util.isUndefined(this.findParameter(methodName, argName))){
+                var required = this.findParameter(methodName, argName).required;
+                //default is false, so if "required" is undefined, return false anyway
+                if (required) {
+                    return true;
+                }
             }
+            
             return false;
         },
 
