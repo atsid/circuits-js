@@ -49,11 +49,13 @@ require(["circuits/plugins/StringPropertyPrefixPlugin"], function (StringPropert
             
             assert.equal("abcd", itemA.prop1);
             assert.equal(34, itemA.prop2);
-            assert.equal(["ar1", "ar2", "ar3"], itemA.prop3);
+            assert.isTrue(["ar1", "ar2", "ar3"].equals(itemA.prop3));
+            //assert.equal(["ar1", "ar2", "ar3"], itemA.prop3);
             prefixPlugin.fn(itemA);
             assert.equal("abcd", itemA.prop1);
             assert.equal(34, itemA.prop2);
-            assert.equal(["ar1", "ar2", "ar3"], itemA.prop3);
+            assert.isTrue(["ar1", "ar2", "ar3"].equals(itemA.prop3));
+            //assert.equal(["ar1", "ar2", "ar3"], itemA.prop3);
         });
         
         it("Tests that the prefix can be added to a string", function () {
@@ -75,9 +77,11 @@ require(["circuits/plugins/StringPropertyPrefixPlugin"], function (StringPropert
         it("Tests that the prefix can be added to an array", function () {
             prefixPlugin.properties = ["prop3"];        
             
-            assert.equal(["ar1", "ar2", "ar3"], itemA.prop3);
+            assert.isTrue(["ar1", "ar2", "ar3"].equals(itemA.prop3));
+            //assert.equal(["ar1", "ar2", "ar3"], itemA.prop3);
             prefixPlugin.fn(itemA);
-            assert.equal(["PREFIX_ar1", "PREFIX_ar2", "PREFIX_ar3"], itemA.prop3);
+            assert.isTrue(["PREFIX_ar1", "PREFIX_ar2", "PREFIX_ar3"].equals(itemA.prop3));
+            //assert.equal(["PREFIX_ar1", "PREFIX_ar2", "PREFIX_ar3"], itemA.prop3);
         });
         
         it("Tests that the prefix can be added to multiple properties at once.", function () {
@@ -87,11 +91,13 @@ require(["circuits/plugins/StringPropertyPrefixPlugin"], function (StringPropert
             
             assert.equal("abcd", itemB.prop1);
             assert.equal(34, itemB.prop2);
-            assert.equal(["ar1", "ar2", "ar3"], itemB.prop3);
+            assert.isTrue(["ar1", "ar2", "ar3"].equals(itemB.prop3));
+            //assert.equal(["ar1", "ar2", "ar3"], itemB.prop3);
             prefixPlugin.fn(itemB);
             assert.equal("PREFIX_abcd", itemB.prop1);
             assert.equal("PREFIX_34", itemB.prop2);
-            assert.equal(["PREFIX_ar1", "PREFIX_ar2", "PREFIX_ar3"], itemB.prop3);  
+            assert.isTrue(["PREFIX_ar1", "PREFIX_ar2", "PREFIX_ar3"].equals(itemB.prop3));
+            //assert.equal(["PREFIX_ar1", "PREFIX_ar2", "PREFIX_ar3"], itemB.prop3);  
         });
     });
     
