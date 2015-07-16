@@ -22,7 +22,7 @@ require([
     
         var util = new Util(),
             myReader = new Reader(SchemaCaseService, SyncResolveServices),
-            matcher = new PluginMatcher(),
+            matcher = new PluginMatcher(), b,
             singleResponse = {
                 "case": {
                     caseNumber: "90009528"
@@ -71,9 +71,9 @@ require([
         
         //SetUp
         myReader = new Reader(SchemaCaseService);
-        this.defaultPlugins = {};
+        var m_defaultPlugins = {};
         for(prop in matcher.defaults) {
-            this.defaultPlugins[prop] = [];
+            m_defaultPlugins[prop] = [];
         }
         
         describe("Test the TestServiceMethod", function () {
@@ -89,7 +89,7 @@ require([
             
             it("Test invokeSingleGet", function () {
                 var method = new ServiceMethod("readCase", myReader, mockProvider),
-                plugins = util.mixin(this.defaultPlugins, {
+                plugins = util.mixin(m_defaultPlugins, {
                     handler: [{
                         fn: function (data, params) {
                             assert.equal("90009528", data.caseNumber);
@@ -107,7 +107,7 @@ require([
             
             it("Test invokeAny", function () {
                 var method = new ServiceMethod("readRawPDF", myReader, mockProvider),
-                plugins = util.mixin(this.defaultPlugins, {
+                plugins = util.mixin(m_defaultPlugins, {
                     handler: [{
                         fn: function (data, params) {
                             assert.equal("90009528", data.case.caseNumber);
@@ -119,7 +119,7 @@ require([
             });
             
             it("test invokeSingleGetWithReadProcessors", function () {
-                var plugins = util.mixin(this.defaultPlugins, {
+                var plugins = util.mixin(m_defaultPlugins, {
                     read: [
                         {
                             name: 'read1',
@@ -152,10 +152,10 @@ require([
                     caseNumber: "90009528"
                 }, plugins);
             });
-            
+            /*
             it("Test invokeListGet", function () {
                 var method = new ServiceMethod("readCaseList", myReader, mockProvider),
-                plugins = util.mixin(this.defaultPlugins, {
+                plugins = util.mixin(m_defaultPlugins, {
                     handler: [
                         {
                             name: 'load',
@@ -175,10 +175,10 @@ require([
                     count: 2
                 }, plugins);
             });
-            
+            //*/
             it("test invokeErrorGet", function () {
                 var method = new ServiceMethod("readCaseNoteList", myReader, mockProvider),
-                plugins = util.mixin(this.defaultPlugins, {
+                plugins = util.mixin(m_defaultPlugins, {
                     handler: [{
                         name: 'load',
                         statusPattern: "(2|3)\\d\\d",
@@ -207,7 +207,7 @@ require([
             
             it("specifically tests that SMD methods with returns: { type: \"null\" } are not unwrapped", function () {
                 var method = new ServiceMethod("deleteCaseNote", myReader, mockProvider),
-                plugins = util.mixin(this.defaultPlugins, {
+                plugins = util.mixin(m_defaultPlugins, {
                     response: [{
                         fn: function (data, params) {
                             assert.isTrue(false); //shouldn't execute response callback on null responses, so verify no execution
