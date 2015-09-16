@@ -1,4 +1,4 @@
-require([
+define([
     "circuits/plugins/RetryOnErrorPlugin"
 ], function (
     RetryOnErrorPlugin
@@ -9,16 +9,16 @@ require([
     /**
      * Test the RetryOnErrorPlugin in isolation.
      */
-    b = new TestCase("TestRetryOnErrorPlugin", {
+    describe("TestRetryOnErrorPlugin", function() {
 
-        setUp: function () {
-        },
+        beforeEach(function () {
+        });
 
         /**
          * Test that the request is re-executed the correct number of times before
          * calling the configured error function.
          */
-        testSimpleRetry: function () {
+        it("testSimpleRetry",  function () {
             var numberOfTries = 0,
                 fnCalled = false,
                 mscope = {mockScope: true},
@@ -38,18 +38,18 @@ require([
                     }
                 };
             mockRequest.execute();
-            assertTrue(fnCalled);
+            assert.isTrue(fnCalled);
             // the initial execute plus the ten retries.
-            assertEquals(11, numberOfTries);
+            assert.equal(11, numberOfTries);
 
             // test the plugin resets properly.
             numberOfTries = 0;
             fnCalled = false;
             mockRequest.execute();
-            assertTrue(fnCalled);
+            assert.isTrue(fnCalled);
             // the initial execute plus the ten retries.
-            assertEquals(11, numberOfTries);
-        }
+            assert.equal(11, numberOfTries);
+        });
 
     });
 });

@@ -1,4 +1,4 @@
-require([
+define([
     "circuits/Request"
 ], function (
     Request
@@ -8,36 +8,36 @@ require([
     /**
      * Test the primitive request methods.
      */
-    b = new TestCase("TestRequest", {
+    describe("TestRequest", function() {
 
-        setUp: function () {
-        },
+        beforeEach(function () {
+        });
 
         // Test simple create and execute request.
-        testSimpleCreateExecute: function () {
+        it("testSimpleCreateExecute",  function () {
             var rawData = {somedata: true},
                 req = new Request({
                     p1: true,
                     handler: function (responseCode, data, ioArgs) {
-                        assertTrue(req.complete);
-                        assertFalse(req.pending);
-                        assertTrue(data.executed);
+                        assert.isTrue(req.complete);
+                        assert.isFalse(req.pending);
+                        assert.isTrue(data.executed);
                     }
                 }, function (params) {
-                    assertTrue(req.pending);
+                    assert.isTrue(req.pending);
                     rawData.executed = true;
                     params.handler.call(req, 200, rawData, {});
                 });
 
-            assertFalse(req.complete);
-            assertFalse(req.pending);
-            assertFalse(req.canceled);
+            assert.isFalse(req.complete);
+            assert.isFalse(req.pending);
+            assert.isFalse(req.canceled);
             req.execute();
-            assertTrue(req.complete);
-            assertTrue(rawData.executed);
-            assertFalse(req.pending);
-            assertFalse(req.canceled);
-        }
+            assert.isTrue(req.complete);
+            assert.isTrue(rawData.executed);
+            assert.isFalse(req.pending);
+            assert.isFalse(req.canceled);
+        });
 
     });
 

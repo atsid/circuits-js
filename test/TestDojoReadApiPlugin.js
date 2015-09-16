@@ -1,4 +1,4 @@
-require([
+define([
     "circuits/plugins/DojoReadApiPlugin",
     "circuits/ServiceFactory",
     "Schema/services/CaseService",
@@ -29,7 +29,8 @@ require([
          *                       items.splice(0, 0, {label: 'Any', id: '0'});
          *                       args.onComplete.call(args.scope, items, request);
          *                   }});
-         *               },
+         *               });
+
          *               methodArgs: ["caseNumber"]
          *           }),
          *
@@ -57,6 +58,7 @@ require([
                 innerObject: {
                     innerProp: true
                 },
+
                 undefinedNum: undefined,
                 undefinedString: undefined,
                 undefinedNull: undefined,
@@ -64,28 +66,30 @@ require([
                 nullStaysNull: null
             },
             item2 = {
-    
+
             };
-    
-        b = new TestCase("TestDojoReadApiPlugin", {
-    
+
+        describe("TestDojoReadApiPlugin", function() {
+
             setup: function () {
-            },
-    
+            });
+
+
             //Tests that the constructor properly instantiates properties
-            testDefaultConstructor: function () {
+            it("testDefaultConstructor",  function () {
                 var service = factory.getService(CaseService, {});
-    
-                assertEquals("mixin", apiPlugin.type);
-    
-                assertEquals(undefined, service.getValue);
+
+                assert.equal("mixin", apiPlugin.type);
+
+                assert.equal(undefined, service.getValue);
                 apiPlugin.fn(service);
                 assertNotEquals(undefined, service.getValue);
-    
-            },
-    
+
+            });
+
+
             //Test fetch with service string
-            testFetchServiceString: function () {
+            it("testFetchServiceString",  function () {
                 var service = factory.getService(CaseService, {}),
                     shouldBe10,
                     args;
@@ -93,10 +97,11 @@ require([
                 apiPlugin.fn(service);
                 shouldBe10 = service.fetch(args);
                 conf.debug(shouldBe10);
-            },
-    
+            });
+
+
             //Test fetch with a passed in function.
-            testFetchServiceFunction: function () {
+            it("testFetchServiceFunction",  function () {
                 var myApiPlugin = new ApiPlugin({
                         identityAttributes: 'caseNumber',
                         methodName: function (args) {
@@ -105,7 +110,8 @@ require([
                             retVal[this.getIdentityAttributes()] = '23.98767';
                             retVal.description = 'This is just for testing';
                             return retVal;
-                        },
+                        });
+
                         methodArgs: 'caseNumber'
                     }),
                     service = factory.getService(CaseService, {}),
@@ -113,94 +119,100 @@ require([
                     args = {caseNumber: '123'};
                 myApiPlugin.fn(service);
                 serviceReturn = service.fetch(args);
-                assertEquals(17, serviceReturn.id);
-                assertEquals('23.98767', serviceReturn.caseNumber);
-            },
+                assert.equal(17, serviceReturn.id);
+                assert.equal('23.98767', serviceReturn.caseNumber);
+            });
+
 
             //Test that the fetch will call onBegin() when onComplete() is called.
-            testFetchCallsOnBegin: function () {
+            it("testFetchCallsOnBegin",  function () {
                 var service = factory.getService(CaseService, {}),
                     shouldBe10,
                     calledOnBegin,
                     calledOnComplete,
                     args;
-                
+
                 args = {
                     caseNumber: '123',
                     onBegin: function () {
                         calledOnBegin = true;
-                    },
+                    });
+
                     onComplete: function () {
-                        calledOnComplete = true; 
+                        calledOnComplete = true;
                     }
                 };
                 service.readCase = function (args, handles) {
                     handles.load();
-                }; 
+                };
                 apiPlugin.fn(service);
                 shouldBe10 = service.fetch(args);
                 conf.debug(shouldBe10);
-                
-                assertTrue('Testing the onBegin handler', calledOnBegin);
-                assertTrue('Testing the onComplete handler', calledOnComplete);
-            },
+
+                assert.isTrue('Testing the onBegin handler', calledOnBegin);
+                assert.isTrue('Testing the onComplete handler', calledOnComplete);
+            });
+
 
             //Test the getValue function.
-            testGetValue: function () {
+            it("testGetValue",  function () {
                 var service = factory.getService(CaseService, {}),
                     shouldBeTrue,
                     shouldBe40,
                     shouldBeNewStr,
                     shouldBeNull,
                     shouldBeUndefined;
-    
+
                 apiPlugin.fn(service);
                 shouldBeTrue = service.getValue(item1, "innerObject.innerProp");
                 shouldBe40 = service.getValue(item2, "undefinedNum", 40);
                 shouldBeNewStr = service.getValue(item2, "undefinedString", "NewStr");
                 shouldBeNull = service.getValue(item2, "undefinedNull", null);
                 shouldBeUndefined = service.getValue(item2, "undefinedUndefined", undefined);
-    
-                assertTrue(shouldBeTrue);
-                
-                assertEquals(40, shouldBe40);
-                assertEquals("NewStr", shouldBeNewStr);
-                assertEquals(null, shouldBeNull);
-                assertEquals(undefined, shouldBeUndefined);
-    
-                assertEquals(undefined, item2.undefinedNum);
-                assertEquals(undefined, item2.undefinedString);
-                assertEquals(undefined, item2.undefinedNull);
-                assertEquals(undefined, item2.undefinedUndefined);
-            },
-    
-            testGetIdentity: function () {
+
+                assert.isTrue(shouldBeTrue);
+
+                assert.equal(40, shouldBe40);
+                assert.equal("NewStr", shouldBeNewStr);
+                assert.equal(null, shouldBeNull);
+                assert.equal(undefined, shouldBeUndefined);
+
+                assert.equal(undefined, item2.undefinedNum);
+                assert.equal(undefined, item2.undefinedString);
+                assert.equal(undefined, item2.undefinedNull);
+                assert.equal(undefined, item2.undefinedUndefined);
+            });
+
+
+            it("testGetIdentity",  function () {
                 var service = factory.getService(CaseService, {}),
                     item = {caseNumber: '12.9878',
                             description: 'This is just a description.',
                             id: 17,
                             documentId: '98.454.9874'};
                 apiPlugin.fn(service);
-    
-                assertEquals('12.9878', service.getIdentity(item));
-            },
-    
-            testGetIdentityAttributesDefined: function () {
+
+                assert.equal('12.9878', service.getIdentity(item));
+            });
+
+
+            it("testGetIdentityAttributesDefined",  function () {
                 var service = factory.getService(CaseService, {});
                 apiPlugin.fn(service);
-    
-                assertEquals('caseNumber', service.getIdentityAttributes());
-            },
-    
-            testGetIdentityAttributesUndefined: function () {
+
+                assert.equal('caseNumber', service.getIdentityAttributes());
+            });
+
+
+            it("testGetIdentityAttributesUndefined",  function () {
                 var service = factory.getService(CaseService, {}),
                     myApiPlugin = new ApiPlugin({
                         methodName: 'readCase',
                         methodArgs: 'caseNumber'
                     });
                 myApiPlugin.fn(service);
-    
-                assertEquals('id', service.getIdentityAttributes());
+
+                assert.equal('id', service.getIdentityAttributes());
             }
         });
     });

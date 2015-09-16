@@ -1,5 +1,5 @@
 define([], function () {
-	
+
 	return {
 	    "id": "Schema/SimpleJsonpServiceSchema",
         "SMDVersion": "2.0",
@@ -9,7 +9,7 @@ define([], function () {
 	    "description": "Test JSONP Service Methods.",
 	    "contentType": "application/json",
         "jsonpCallbackParameter": "callback",
-        "target": "/test/src/test/data/jsonpResponse.json",
+        "target": "/base/test/data/jsonpResponse.json",
         "services": {
             "getModel": {
                 "transport": "JSONP",

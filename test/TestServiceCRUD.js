@@ -1,4 +1,4 @@
-require([
+define([
     "circuits/ServiceFactory",
     "circuits/Service",
     "circuits/ZypSMDReader",
@@ -89,11 +89,11 @@ require([
 
         // test standard CRUD operations of a service using a factory to create, plugins to process results
         // etc...
-        b = new TestCase("TestServiceCRUD", {
+        describe("TestServiceCRUD", function() {
 
             // Create a service in the recommended way using a factory with default resolution but
             // injecting a mock DataProvider.
-            setUp: function () {
+            beforeEach(function () {
                 //mock provider instance is now referenced inside requests, so the test data is effectively cached and needs to be reset
                 mockProviderCRUD.resp.model.createdByMock = false;
                 mockProviderCRUD.resp.model.readArrayByMock = false;
@@ -106,44 +106,44 @@ require([
                 serviceFactoryCRUD = new Factory({provider: mockProviderCRUD, plugins: [handlerPlugin], resolver: SyncResolveServices });
                 serviceCRUD = serviceFactoryCRUD.getServiceByName("Schema/SimpleTestServiceSchema");
                 gotData = null;
-            },
+            });
 
             // test create call
-            testCreate: function () {
+            it("testCreate",  function () {
                 var params = {payload: {model: SimpleTestModel}},
                     req = serviceCRUD.createModel(params);
-                assertFalse(gotData === null);
-                assertTrue(gotData.createdByMock);
-                assertEquals(req.id, newParams.request.id);
-            },
+                assert.isFalse(gotData === null);
+                assert.isTrue(gotData.createdByMock);
+                assert.equal(req.id, newParams.request.id);
+            });
 
             // test update call
-            testUpdate: function () {
+            it("testUpdate",  function () {
                 serviceCRUD.updateModel({modelNumber: "123", payload: {model: SimpleTestModel}});
-                assertFalse(gotData === null);
-                assertTrue(gotData.updatedByMock);
-            },
+                assert.isFalse(gotData === null);
+                assert.isTrue(gotData.updatedByMock);
+            });
 
             // test read call
-            testRead: function () {
+            it("testRead",  function () {
                 serviceCRUD.readModel({modelNumber: "123"});
-                assertFalse(gotData === null);
-                assertTrue(gotData.readByMock);
-            },
+                assert.isFalse(gotData === null);
+                assert.isTrue(gotData.readByMock);
+            });
 
             // test read call with a load override
-            testReadWithLoadOverride: function () {
+            it("testReadWithLoadOverride",  function () {
                 serviceCRUD.readModel({modelNumber: "123"}, {
                     onLoad: function (data, params, total) {
                         params.plugin.stopProcessing = true;
                     }
                 });
                 // should not have called default handler.
-                assertTrue(gotData === null);
-            },
+                assert.isTrue(gotData === null);
+            });
 
             // test read call with error and retries.
-            testErrorRead: function () {
+            it("testErrorRead",  function () {
                 var fnCalled = false,
                     testdata = null,
                     mscope = {mockScope: true},
@@ -158,22 +158,22 @@ require([
                         }
                     });
                 serviceCRUD.readModel({modelNumber: "error"}, [plugin]);
-                assertFalse(testdata === null);
-                assertTrue(fnCalled);
-                assertEquals(11, testdata.model.readErrorByMock);
-            },
+                assert.isFalse(testdata === null);
+                assert.isTrue(fnCalled);
+                assert.equal(11, testdata.model.readErrorByMock);
+            });
 
             // test read array call
-            testReadArray: function () {
+            it("testReadArray",  function () {
                 serviceCRUD.readArray({modelNumber: "123"});
-                assertFalse(gotData === null);
-                assertTrue(gotData[0].model.readArrayByMock);
-                assertNotUndefined(gotData.length);
-                assertEquals(2, gotData.length);
-            },
+                assert.isFalse(gotData === null);
+                assert.isTrue(gotData[0].model.readArrayByMock);
+                assert.isDefined(gotData.length);
+                assert.equal(2, gotData.length);
+            });
 
             // test update array call
-            testUpdateArray: function () {
+            it("testUpdateArray",  function () {
                 serviceCRUD.updateArray({
                     modelNumber: "123",
                     payload: [
@@ -181,17 +181,17 @@ require([
                         {modelNumber: "456"}
                     ]
                 });
-                assertFalse(gotData === null);
-                assertTrue(gotData[0].model.updatedByMock);
-                assertEquals(2, gotData[0].model.arrayUpdate.length);
-            },
+                assert.isFalse(gotData === null);
+                assert.isTrue(gotData[0].model.updatedByMock);
+                assert.equal(2, gotData[0].model.arrayUpdate.length);
+            });
 
             // test delete call
-            testDelete: function () {
+            it("testDelete",  function () {
                 serviceCRUD.deleteModel({modelNumber: "123"});
-                assertTrue(gotData === null);
-                assertTrue(mockProviderCRUD.resp.model.deletedByMock);
-            }
+                assert.isTrue(gotData === null);
+                assert.isTrue(mockProviderCRUD.resp.model.deletedByMock);
+            });
 
         });
 

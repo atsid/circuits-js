@@ -1,4 +1,4 @@
-require(["circuits/plugins/StringPropertyPrefixPlugin"], function (StringPropertyPrefixPlugin) {
+define(["circuits/plugins/StringPropertyPrefixPlugin"], function (StringPropertyPrefixPlugin) {
 
     var b,
         prefixPlugin = new StringPropertyPrefixPlugin(),
@@ -7,78 +7,82 @@ require(["circuits/plugins/StringPropertyPrefixPlugin"], function (StringPropert
             prop2: 34,
             prop3: ["ar1", "ar2", "ar3"]
         },
+
         itemB = {
             prop1: "abcd",
             prop2: 34,
             prop3: ["ar1", "ar2", "ar3"]
         };
-    
+
     prefixPlugin.prefix = "PREFIX_";
-    
-    b = new TestCase("TestStringPropertyPrefixPlugin", {
-        
-        setup: function () {
-        },
-        
+
+    describe("TestStringPropertyPrefixPlugin", function() {
+
         //Tests that the constructor properly instantiates properties
-        testDefaultConstructor: function () {
-            assertEquals("read", prefixPlugin.type);
-        },
-        
+        it("testDefaultConstructor",  function () {
+            assert.equal("read", prefixPlugin.type);
+        });
+
+
         //Tests that the prefix will not be added if the properties array is empty
-        testPrefixOnNone: function () {
-            prefixPlugin.properties = [];        
-            
-            assertEquals("abcd", itemA.prop1);
-            assertEquals(34, itemA.prop2);
-            assertEquals(["ar1", "ar2", "ar3"], itemA.prop3);
+        it("testPrefixOnNone",  function () {
+            prefixPlugin.properties = [];
+
+            assert.equal("abcd", itemA.prop1);
+            assert.equal(34, itemA.prop2);
+            assert.equal(["ar1", "ar2", "ar3"].join(":"), itemA.prop3.join(":"));
             prefixPlugin.fn(itemA);
-            assertEquals("abcd", itemA.prop1);
-            assertEquals(34, itemA.prop2);
-            assertEquals(["ar1", "ar2", "ar3"], itemA.prop3);
-        },
-        
+            assert.equal("abcd", itemA.prop1);
+            assert.equal(34, itemA.prop2);
+            assert.equal(["ar1", "ar2", "ar3"].join(":"), itemA.prop3.join(":"));
+        });
+
+
         //Tests that the prefix can be added to a string
-        testPrefixOnString: function () {
-            prefixPlugin.properties = ["prop1"];        
-            
-            assertEquals("abcd", itemA.prop1);
+        it("testPrefixOnString",  function () {
+            prefixPlugin.properties = ["prop1"];
+
+            assert.equal("abcd", itemA.prop1);
             prefixPlugin.fn(itemA);
-            assertEquals("PREFIX_abcd", itemA.prop1);
-        },
-        
+            assert.equal("PREFIX_abcd", itemA.prop1);
+        });
+
+
         //Tests that the prefix can be added to a number
-        testPrefixOnNumber: function () {
-            prefixPlugin.properties = ["prop2"];        
-            
-            assertEquals(34, itemA.prop2);
+        it("testPrefixOnNumber",  function () {
+            prefixPlugin.properties = ["prop2"];
+
+            assert.equal(34, itemA.prop2);
             prefixPlugin.fn(itemA);
-            assertEquals("PREFIX_34", itemA.prop2);
-        },
-        
+            assert.equal("PREFIX_34", itemA.prop2);
+        });
+
+
         //Tests that the prefix can be added to an array
-        testPrefixOnArray: function () {
-            prefixPlugin.properties = ["prop3"];        
-            
-            assertEquals(["ar1", "ar2", "ar3"], itemA.prop3);
+        it("testPrefixOnArray",  function () {
+            prefixPlugin.properties = ["prop3"];
+
+            assert.equal(["ar1", "ar2", "ar3"].join(":"), itemA.prop3.join(":"));
             prefixPlugin.fn(itemA);
-            assertEquals(["PREFIX_ar1", "PREFIX_ar2", "PREFIX_ar3"], itemA.prop3);
-        },
-        
+            assert.equal(["PREFIX_ar1", "PREFIX_ar2", "PREFIX_ar3"].join(":"), itemA.prop3.join(":"));
+        });
+
+
         //Tests that the prefix can be added to multiple properties at once.
         //Uses itemB because the properties of itemA have already been affixed with
         //the prefix
-        testPrefixOnMultiple: function () {
-            prefixPlugin.properties = ["prop1", "prop2", "prop3"];        
-            
-            assertEquals("abcd", itemB.prop1);
-            assertEquals(34, itemB.prop2);
-            assertEquals(["ar1", "ar2", "ar3"], itemB.prop3);
+        it("testPrefixOnMultiple",  function () {
+            prefixPlugin.properties = ["prop1", "prop2", "prop3"];
+
+            assert.equal("abcd", itemB.prop1);
+            assert.equal(34, itemB.prop2);
+            assert.equal(["ar1", "ar2", "ar3"].join(":"), itemB.prop3.join(":"));
             prefixPlugin.fn(itemB);
-            assertEquals("PREFIX_abcd", itemB.prop1);
-            assertEquals("PREFIX_34", itemB.prop2);
-            assertEquals(["PREFIX_ar1", "PREFIX_ar2", "PREFIX_ar3"], itemB.prop3);
-        },
+            assert.equal("PREFIX_abcd", itemB.prop1);
+            assert.equal("PREFIX_34", itemB.prop2);
+            assert.equal(["PREFIX_ar1", "PREFIX_ar2", "PREFIX_ar3"].join(":"), itemB.prop3.join(":"));
+        });
+
     });
 });
 

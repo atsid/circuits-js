@@ -1,4 +1,4 @@
-require([
+define([
     "circuits/ServiceFactory",
     "circuits/Service",
     "circuits/ZypSMDReader",
@@ -169,12 +169,12 @@ require([
                     }
                 }
             ];
-    
-    
+
+
         // test combinations of plugin processing.
-        b = new TestCase("TestServicePlugins", {
-    
-            setUp: function () {
+        describe("TestServicePlugins", function() {
+
+            beforeEach(function () {
                 serviceFactoryTSP = new Factory({provider: mockProviderTSP, plugins: factoryPlugins, resolver: SyncResolveServices});
                 serviceTSP = serviceFactoryTSP.getServiceByName("Schema/SimpleTestServiceSchema");
                 factoryGotData = null;
@@ -185,80 +185,80 @@ require([
                 factoryCorrectScope = false;
                 additionalPluginCalled = false;
                 additionalPluginCalledWithCorrectScope = false;
-            },
-    
+            });
+
             // test factory level plugins
-            testFactoryLevelNonListPlugins: function () {
+            it("testFactoryLevelNonListPlugins",  function () {
                 serviceTSP.readModel({modelNumber: "123"});
-                assertFalse(factoryGotData === null);
-                assertTrue(factoryCorrectScope);
-                assertTrue(factoryGotData.readByMock);
-                assertTrue(serviceTSP.factoryGotMixin);
-                assertTrue(factoryReadCalled);
-                assertTrue(factoryResponseCalled);
-                assertTrue(factoryRequestCalled);
-            },
-    
+                assert.isFalse(factoryGotData === null);
+                assert.isTrue(factoryCorrectScope);
+                assert.isTrue(factoryGotData.readByMock);
+                assert.isTrue(serviceTSP.factoryGotMixin);
+                assert.isTrue(factoryReadCalled);
+                assert.isTrue(factoryResponseCalled);
+                assert.isTrue(factoryRequestCalled);
+            });
+
             // test factory level plugins
-            testFactoryLevelListPlugins: function () {
+            it("testFactoryLevelListPlugins",  function () {
                 serviceTSP.listModel({});
-                assertFalse(factoryGotData === null);
-                assertTrue(factoryGotData.length > 0);
-                assertTrue(serviceTSP.factoryGotMixin);
-                assertTrue(factoryReadCalled);
-                assertTrue(factoryResponseCalled);
-                assertTrue(factoryRequestCalled);
-            },
-    
+                assert.isFalse(factoryGotData === null);
+                assert.isTrue(factoryGotData.length > 0);
+                assert.isTrue(serviceTSP.factoryGotMixin);
+                assert.isTrue(factoryReadCalled);
+                assert.isTrue(factoryResponseCalled);
+                assert.isTrue(factoryRequestCalled);
+            });
+
             // test service level plugin overrides
-            testServiceLevelOverride: function () {
+            it("testServiceLevelOverride",  function () {
                 serviceTSP.addPlugin(additionalPlugin);
                 serviceTSP.readModel({modelNumber: "123"});
-                assertTrue(factoryGotData === null);
-                assertTrue(serviceTSP.factoryGotMixin);
-                assertTrue(factoryReadCalled);
-                assertTrue(factoryResponseCalled);
-                assertTrue(factoryRequestCalled);
-                assertTrue(additionalPluginCalled);
-                assertTrue(additionalPluginCalledWithCorrectScope);
+                assert.isTrue(factoryGotData === null);
+                assert.isTrue(serviceTSP.factoryGotMixin);
+                assert.isTrue(factoryReadCalled);
+                assert.isTrue(factoryResponseCalled);
+                assert.isTrue(factoryRequestCalled);
+                assert.isTrue(additionalPluginCalled);
+                assert.isTrue(additionalPluginCalledWithCorrectScope);
                 additionalPluginCalled = false;
-    
+
                 // remove should work
                 serviceTSP.removePlugin(additionalPlugin);
                 serviceTSP.readModel({modelNumber: "123"});
-                assertFalse(factoryGotData === null);
-                assertTrue(serviceTSP.factoryGotMixin);
-                assertTrue(factoryReadCalled);
-                assertTrue(factoryResponseCalled);
-                assertTrue(factoryRequestCalled);
-                assertFalse(additionalPluginCalled);
-            },
-    
+                assert.isFalse(factoryGotData === null);
+                assert.isTrue(serviceTSP.factoryGotMixin);
+                assert.isTrue(factoryReadCalled);
+                assert.isTrue(factoryResponseCalled);
+                assert.isTrue(factoryRequestCalled);
+                assert.isFalse(additionalPluginCalled);
+            });
+
             // test invocation level plugin overrides
-            testInvocationLevelOverride: function () {
+            it("testInvocationLevelOverride",  function () {
                 //Should override
                 serviceTSP.readModel({modelNumber: "123"}, [additionalPlugin]);
-                assertTrue(factoryGotData === null);
-                assertTrue(serviceTSP.factoryGotMixin);
-                assertTrue(factoryReadCalled);
-                assertTrue(factoryResponseCalled);
-                assertTrue(factoryRequestCalled);
-                assertTrue(additionalPluginCalled);
-                assertTrue(additionalPluginCalledWithCorrectScope);
+                assert.isTrue(factoryGotData === null);
+                assert.isTrue(serviceTSP.factoryGotMixin);
+                assert.isTrue(factoryReadCalled);
+                assert.isTrue(factoryResponseCalled);
+                assert.isTrue(factoryRequestCalled);
+                assert.isTrue(additionalPluginCalled);
+                assert.isTrue(additionalPluginCalledWithCorrectScope);
                 additionalPluginCalled = false;
-    
+
                 //should still work without override
                 serviceTSP.readModel({modelNumber: "123"});
-                assertFalse(factoryGotData === null);
-                assertTrue(serviceTSP.factoryGotMixin);
-                assertTrue(factoryReadCalled);
-                assertTrue(factoryResponseCalled);
-                assertTrue(factoryRequestCalled);
-                assertFalse(additionalPluginCalled);
-            },
-    
+                assert.isFalse(factoryGotData === null);
+                assert.isTrue(serviceTSP.factoryGotMixin);
+                assert.isTrue(factoryReadCalled);
+                assert.isTrue(factoryResponseCalled);
+                assert.isTrue(factoryRequestCalled);
+                assert.isFalse(additionalPluginCalled);
+            });
+
             // test "provider" plugin execution.
-            testProviderPlugin: function () {
+            it("testProviderPlugin",  function () {
                 var Provider = declare(DataProvider, {
                     create: function (params) {
                         params.payload.overrideCreate = true;
@@ -285,21 +285,21 @@ require([
                     },
                     service = serviceFactoryTSP.getServiceByName("Schema/SimpleTestServiceSchema", [providerPlugin]),
                     model = {modelNumber: "123"};
-    
+
                 service.readModel(model);
-    
-                assertTrue(model.overrideRead);
-    
+
+                assert.isTrue(model.overrideRead);
+
                 model = {modelNumber: "123"};
                 service = serviceFactoryTSP.getServiceByName("Schema/SimpleTestServiceSchema");
                 service.readModel(model);
-    
-                assertUndefined(model.overrideRead);
-    
+
+                assert.isUndefined(model.overrideRead);
+
                 service.readModel(model, [providerPlugin]);
-                assertTrue(model.overrideRead);
-            }
-    
+                assert.isTrue(model.overrideRead);
+            });
+
         });
     });
 

@@ -1,5 +1,5 @@
-require(["circuits/plugins/UrlPrefixPlugin"], function (UrlPrefixPlugin) {
-    
+define(["circuits/plugins/UrlPrefixPlugin"], function (UrlPrefixPlugin) {
+
     var b,
         urlPlugin = new UrlPrefixPlugin(),
         urlItem = {
@@ -7,26 +7,25 @@ require(["circuits/plugins/UrlPrefixPlugin"], function (UrlPrefixPlugin) {
         };
 
     urlPlugin.prefix = "URL_PR_";
-    
-    b = new TestCase("TestUrlPrefixPlugin", {
-        
-        setup: function () {
-        },
-        
+
+    describe("TestUrlPrefixPlugin", function() {
+
+
         //Tests that the constructor properly instantiates properties
-        testDefaultConstructor: function () {
-            assertEquals("url", urlPlugin.type);
-        },
-        
+        it("testDefaultConstructor",  function () {
+            assert.equal("url", urlPlugin.type);
+        });
+
+
         //Tests that the prefix will be added to the passed url of an item
-        testPrefixOnUrl: function () {
+        it("testPrefixOnUrl",  function () {
             var returnedURL;
-            
-            assertEquals("thisisaurl.com", urlItem.url);
+
+            assert.equal("thisisaurl.com", urlItem.url);
             returnedURL = urlPlugin.fn(urlItem.url);
-            assertEquals("URL_PR_thisisaurl.com", returnedURL);
-        }
-            
+            assert.equal("URL_PR_thisisaurl.com", returnedURL);
+        });
+
     });
 });
 

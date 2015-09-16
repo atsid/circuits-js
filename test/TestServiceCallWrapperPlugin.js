@@ -1,4 +1,4 @@
-require([
+define([
     "circuits/plugins/ServiceCallWrapperPlugin"
 ], function (
     ServiceCallWrapperPlugin
@@ -9,15 +9,15 @@ require([
     /**
      * Test the ServiceCallWrapperPlugin in isolation.
      */
-    b = new TestCase("TestServiceCallWrapperPlugin", {
+    describe("TestServiceCallWrapperPlugin", function() {
 
-        setUp: function () {
-        },
+        beforeEach(function () {
+        });
 
         /**
          * Test that the wrap method is called with a fake service.
          */
-        testSimpleWrap: function () {
+        it("testSimpleWrap",  function () {
             var testing = "",
                 service = {
                     call1: function (params, callbacks) {
@@ -32,8 +32,8 @@ require([
                 });
             plug.fn(service, ["call1"]);
             service.call1("one,", "two,", "three,", "four");
-            assertEquals(testing, "one,two,three,four");
-        }
+            assert.equal(testing, "one,two,three,four");
+        });
 
     });
 });

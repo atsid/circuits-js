@@ -1,4 +1,4 @@
-require([
+define([
     "circuits/DataProvider",
     "circuits/OfflineTolerantProvider",
     "circuits/declare",
@@ -11,7 +11,7 @@ require([
     Util,
     Request
 ) {
-    
+
         var util = new Util(), b,
             MockProviderDelegate = declare(DataProvider, {
                 offline: false,
@@ -54,19 +54,19 @@ require([
                     return this.execute("deleteCalled", params);
                 }
             });
-        
+
         /**
          * Test the primitive provider methods
          */
-        b = new TestCase("TestOfflineTolerantProvider", {
-        
-            setUp: function () {
+        describe("TestOfflineTolerantProvider", function() {
+
+            beforeEach(function () {
                 this.mockDelegate = new MockProviderDelegate();
                 this.provider = new OfflineTolerantProvider(this.mockDelegate);
-            },
-        
+            });
+
             // Test the update method on offline provider.
-            testUpdate: function () {
+            it("testUpdate",  function () {
                 this.mockDelegate.offline = true;
                 var req = this.provider.update({
                     url: "update/resource/1",
@@ -74,17 +74,17 @@ require([
                         mydata: "data"
                     },
                     load: function (data, ioArgs) {
-                        assertUndefined(data.updateCalled);
-                        assertEquals("data", data.mydata);
+                        assert.isUndefined(data.updateCalled);
+                        assert.equal("data", data.mydata);
                     },
                     error: function (data, ioArgs) {
-                        assertFalse(true);
+                        assert.isFalse(true);
                     }
                 });
-            },
-        
+            });
+
             // Test the delete method on offline provider.
-            testDelete: function () {
+            it("testDelete",  function () {
                 this.mockDelegate.offline = true;
                 var req = this.provider.del({
                     url: "delete/resource/1",
@@ -92,15 +92,15 @@ require([
                         mydata: "data"
                     },
                     load: function (data, ioArgs) {
-                        assertUndefined(data.deleteCalled);
-                        assertEquals("data", data.mydata);
+                        assert.isUndefined(data.deleteCalled);
+                        assert.equal("data", data.mydata);
                     },
                     error: function (data, ioArgs) {
-                        assertFalse(true);
+                        assert.isFalse(true);
                     }
                 });
-            }
-        
+            });
+
         });
-    
+
     });

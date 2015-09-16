@@ -16,14 +16,13 @@ require([
     SimpleTestModelResponse
 ) {
 
-    var b,
-        MockProviderBinary = declare(DataProvider, {
+    var MockProviderBinary = declare(DataProvider, {
             resp: SimpleTestModelResponse,
             create: function (params) {
                 var that = this;
                 this.resp.model.createdByMock = params.headers;
                 params.request = new Request({}, function () {
-                    params.handler.call(b, 200, that.resp, params);
+                    params.handler.call(null, 200, that.resp, params);
                 });
                 return params.request;
             },
@@ -43,33 +42,33 @@ require([
         serviceFactoryBinary,
         serviceBinary;
 
-    b = new TestCase("TestBinaryService", {
+    describe("TestBinaryService", function() {
 
         // Create a service in the recommended way using a factory with default resolution but
         // injecting a mock DataProvider.
-        setUp: function () {
+        beforeEach(function() {
             // handle synchronous loading of service descriptors.
             serviceFactoryBinary = new ServiceFactory({
                 provider: mockProviderBinary,
                 resolver: SyncResolveServices
             });
             serviceBinary = serviceFactoryBinary.getServiceByName("Schema/BinaryObjectService");
-        },
+        });
 
         // test that the service description is read correctly.
-        testBinaryUpload: function () {
+        it("testBinaryUpload", function () {
             var svcfactory = new ServiceFactory(),
                 resp;
 
             serviceBinary.uploadDocument(new FormData(), {load: function (data, params) {
                 resp = data;
-                assertNotUndefined(resp.model.createdByMock["Content-Type"]);
+                assert.isDefined(resp.model.createdByMock["Content-Type"]);
             }});
 
-        },
+        });
 
         // test that the service description is read correctly.
-        testBinaryDownload: function () {
+        it("testBinaryDownload", function () {
             var svcfactory = new ServiceFactory(),
                 resp = null,
                 req;
@@ -78,10 +77,10 @@ require([
                 resp = data;
             }});
 
-            assertTrue(resp === null);
-            assertTrue(req.url === "binaryobjects/documents");
-            assertTrue(req.mediaType === "application/pdf");
-        }
+            assert.isTrue(resp === null);
+            assert.isTrue(req.url === "binaryobjects/documents");
+            assert.isTrue(req.mediaType === "application/pdf");
+        });
 
     });
 });

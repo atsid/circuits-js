@@ -1,4 +1,4 @@
-require([
+define([
     "circuits/ServiceFactory",
     "circuits/Service",
     "circuits/DataProvider",
@@ -18,17 +18,15 @@ require([
     SyncResolveServices
 ) {
 
-    var b;
-
     // test the creation and execution of a service queue.
-    b = new AsyncTestCase("TestServiceQueue");
 
-    b.prototype.testBasicQueueExecution = function (queue) {
-        var MockProviderClass = declare(null, {
+    describe("Test ServiceQueue", function () {
+        it("Test basic queue execution", function (done) {
+            var MockProviderClass = declare(null, {
                 read: function (params) {
                     params.payload.readByMock = true;
                     setTimeout(function () {
-                        params.handler.call(b, 200, params.payload, params);
+                        params.handler.call(null, 200, params.payload, params);
                     }, 500);
                     return new Request({}, function () {
                     });
@@ -50,25 +48,23 @@ require([
             },
             loadQueue = function (requests) {
                 loadQueueCalled += 1;
+                assert.equal(2, loadCalled);
+                assert.equal(1, loadQueueCalled);
+                assert.isFalse(svcQueue.hasErrors());
+                assert.equal(2, svcQueue.getCompletedRequests().length);
+                done();
             };
 
-        svcQueue = serviceFactory.getServiceQueue();
-        svcQueue.add(svc.readModel, params, {scope: this, load: loadFn});
-        svcQueue.add(svc1.readModel, params, {scope: this, load: loadFn});
-        queue.call("Execute the service calls.", function (cbs) {
-            var f = cbs.add(loadQueue);
-            svcQueue.execute(f);
-        });
-        queue.call("check results", function () {
-            assertEquals(2, loadCalled);
-            assertEquals(1, loadQueueCalled);
-            assertFalse(svcQueue.hasErrors());
-            assertEquals(2, svcQueue.getCompletedRequests().length);
-        });
-    };
+            svcQueue = serviceFactory.getServiceQueue();
+            svcQueue.add(svc.readModel, params, {scope: this, load: loadFn});
+            svcQueue.add(svc1.readModel, params, {scope: this, load: loadFn});
 
-    b.prototype.testRefreshQueueExecution = function (queue) {
-        var MockProviderClass = declare(null, {
+            // Execute the service calls.
+            svcQueue.execute(loadQueue);
+        });
+
+        it("Test refresh queue execution", function (done) {
+            var MockProviderClass = declare(null, {
                 read: function (params) {
                     params.payload.readByMock = true;
                     setTimeout(function () {
@@ -96,34 +92,35 @@ require([
             },
             loadQueue = function (requests) {
                 loadQueueCalled += 1;
+                if (loadQueueCalled === 2) {
+                    assert.equal(4, loadCalled);
+                    assert.equal(2, loadQueueCalled);
+                    assert.isFalse(svcQueue.hasErrors());
+                    assert.equal(2, svcQueue.getCompletedRequests().length);
+
+                    // setTimeout to get it out of this callback
+                    setTimeout(function() {
+                        // clear queue and check that it doesn't get executed again.
+                        svcQueue.clear();
+                    }, 0);
+                    setTimeout(function() {
+                        done();
+                    }, 200);
+                } else if (loadQueueCalled > 2) {
+                    // check results again after clear and timeout to make sure
+                    // the queue hasn't been executed again.
+                    // assert.equal(4, loadCalled);
+                    // assert.equal(2, loadQueueCalled);
+                    assert.fail(false, true, "Load queue called WAAAAY too many times");
+                }
             };
 
-        svcQueue = serviceFactory.getServiceQueue({autoRefreshInterval: 100});
-        svcQueue.add(svc.readModel, params, {scope: this, load: loadFn});
-        svcQueue.add(svc1.readModel, params, {scope: this, load: loadFn});
+            svcQueue = serviceFactory.getServiceQueue({autoRefreshInterval: 100});
+            svcQueue.add(svc.readModel, params, {scope: this, load: loadFn});
+            svcQueue.add(svc1.readModel, params, {scope: this, load: loadFn});
 
-        queue.call("Execute the auto-refresh queue.", function (cbs) {
-            var f = cbs.add(loadQueue, 2);
-            svcQueue.execute(f);
+            svcQueue.execute(loadQueue);
         });
-        queue.call("check results for queue executing twice", function (cbs) {
-            var nullfunc = cbs.add(function () {
-            });
-            assertEquals(4, loadCalled);
-            assertEquals(2, loadQueueCalled);
-            assertFalse(svcQueue.hasErrors());
-            assertEquals(2, svcQueue.getCompletedRequests().length);
+    });
 
-            // clear queue and check that it doesn't get executed again.
-            svcQueue.clear();
-            setTimeout(nullfunc, 200);
-        });
-
-        // check results again after clear and timeout to make sure
-        // the queue hasn't been executed again.
-        queue.call("check results again", function (cbs) {
-            assertEquals(4, loadCalled);
-            assertEquals(2, loadQueueCalled);
-        });
-    };
 });

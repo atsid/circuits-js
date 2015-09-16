@@ -1,4 +1,4 @@
-require([
+define([
     "circuits/ServiceMethod",
     "circuits/DataProvider",
     "circuits/ZypSMDReader",
@@ -7,7 +7,8 @@ require([
     "circuits/declare",
     "circuits/util",
     "Schema/services/CaseService",
-    "test/SyncResolveServices"
+    "test/SyncResolveServices",
+    "test/testUtils"
 ], function (
     ServiceMethod,
     DataProvider,
@@ -17,12 +18,13 @@ require([
     declare,
     Util,
     SchemaCaseService,
-    SyncResolveServices
+    SyncResolveServices,
+    testUtils
 ) {
-    
+
         var util = new Util(),
             b,
-            myReader = new Reader(SchemaCaseService, SyncResolveServices),
+            myReader,
             matcher = new PluginMatcher(),
             singleResponse = {
                 "case": {
@@ -66,64 +68,68 @@ require([
                     return request;
                 }
             }),
-            mockProvider = new MockProvider(),
+            mockProvider = new MockProvider();
 
-        b = new TestCase("TestServiceMethod", {
-        
-            setUp: function () {
-                myReader = new Reader(SchemaCaseService);
+        describe("TestServiceMethod", function() {
+
+            beforeEach(function () {
+                myReader = new Reader(testUtils.clone(SchemaCaseService), SyncResolveServices);
                 this.defaultPlugins = {};
                 for(prop in matcher.defaults) {
                     this.defaultPlugins[prop] = [];
                 }
-            },
-        
+            });
+
+
             //Verify that the constructor correctly instantiates it's properties
-            testConstructor: function () {
+            it("testConstructor",  function () {
                 var method = new ServiceMethod("readCase", myReader, mockProvider);
-        
-                assertEquals("readCase", method.name);
-                assertEquals(myReader, method.reader);
-                assertEquals(mockProvider, method.provider);
-                assertEquals("case", method.responsePayloadName);
-                assertEquals("GET", method.transport);
-            },
-        
-            testInvokeSingleGet: function () {
-        
+
+                assert.equal("readCase", method.name);
+                assert.equal(myReader, method.reader);
+                assert.equal(mockProvider, method.provider);
+                assert.equal("case", method.responsePayloadName);
+                assert.equal("GET", method.transport);
+            });
+
+
+            it("testInvokeSingleGet",  function () {
+
                 var method = new ServiceMethod("readCase", myReader, mockProvider),
                     plugins = util.mixin(this.defaultPlugins, {
                         handler: [{
                             fn: function (data, params) {
-                                assertEquals("90009528", data.caseNumber);
-                                assertUndefined(params.request.total); //single item response, should have undefined total
-                                assertEquals(2, params.links.length);
-                                assertEquals(singleResponse, params.response);
+                                assert.equal("90009528", data.caseNumber);
+                                assert.isUndefined(params.request.total); //single item response, should have undefined total
+                                assert.equal(2, params.links.length);
+                                assert.equal(singleResponse, params.response);
                             }
                         }]
                     });
-        
+
                 method.invoke({
                     caseNumber: "90009528"
                 }, plugins);
-        
-            },
-        
-            testInvokeAny: function () {
+
+            });
+
+
+            it("testInvokeAny",  function () {
                 var method = new ServiceMethod("readRawPDF", myReader, mockProvider),
                     plugins = util.mixin(this.defaultPlugins, {
                         handler: [{
                             fn: function (data, params) {
-                                assertEquals("90009528", data.case.caseNumber);
-                                assertUndefined(params.request.total); //single item response, should have undefined total
+                                assert.equal("90009528", data.case.caseNumber);
+                                assert.isUndefined(params.request.total); //single item response, should have undefined total
                             }
                         }]
                     });
                 method.invoke({caseNumber: "90009528"}, plugins);
-            },
-        
-            testInvokeSingleGetWithReadProcessors: function () {
-        
+            });
+
+
+            it("testInvokeSingleGetWithReadProcessors",  function () {
+
                 var plugins = util.mixin(this.defaultPlugins, {
                     read: [
                         {
@@ -132,6 +138,7 @@ require([
                                 item.caseNumber = "1";
                             }
                         },
+
                         {
                             name: 'read2',
                             fn: function (item) {
@@ -143,35 +150,36 @@ require([
                         {
                             name: 'load1',
                             fn : function (data, params) {
-                                assertEquals("1", data.caseNumber); //we've transformed the case number in the read processor
-                                assertTrue(data.justRead);
-                                assertUndefined(params.request.total); //single item response, should have undefined total
-                                assertEquals(singleResponse, params.response);
+                                assert.equal("1", data.caseNumber); //we've transformed the case number in the read processor
+                                assert.isTrue(data.justRead);
+                                assert.isUndefined(params.request.total); //single item response, should have undefined total
+                                assert.equal(singleResponse, params.response);
                             }
                         }
                     ]
                 }),
                     method = new ServiceMethod("readCase", myReader, mockProvider);
-        
+
                 method.invoke({
                     caseNumber: "90009528"
                 }, plugins);
-        
-            },
-        
-            testInvokeListGet: function () {
-        
+
+            });
+
+
+            it("testInvokeListGet",  function () {
+
                 var method = new ServiceMethod("readCaseList", myReader, mockProvider),
                     plugins = util.mixin(this.defaultPlugins, {
                         handler: [
                             {
                                 name: 'load',
                                 fn: function (data, params) {
-                                    assertEquals(2, data.length);
-                                    assertEquals(10, params.request.total);
-                                    assertEquals("90009528", data[0].caseNumber);
-                                    assertEquals("90009529", data[1].caseNumber);
-                                    assertEquals(myListResponse, params.response);
+                                    assert.equal(2, data.length);
+                                    assert.equal(10, params.request.total);
+                                    assert.equal("90009528", data[0].caseNumber);
+                                    assert.equal("90009529", data[1].caseNumber);
+                                    assert.equal(myListResponse, params.response);
                                 }
                             }
                         ]
@@ -181,24 +189,25 @@ require([
                     offset: 0,
                     count: 2
                 }, plugins);
-        
-            },
-        
-            testInvokeErrorGet: function () {
-        
+
+            });
+
+
+            it("testInvokeErrorGet",  function () {
+
                 var method = new ServiceMethod("readCaseNoteList", myReader, mockProvider),
                     plugins = util.mixin(this.defaultPlugins, {
                         handler: [{
                             name: 'load',
                             statusPattern: "(2|3)\\d\\d",
                             fn: function (data, params, total) {
-                                assertTrue(false);
+                                assert.isTrue(false);
                             }
                         }, {
                             name: 'error',
                             statusPattern: "(4|5)\\d\\d",
                             fn: function (data, params) {
-                                assertFalse(data.success);
+                                assert.isFalse(data.success);
                             }
                         }]
                     });
@@ -207,32 +216,33 @@ require([
                         params.handler.call(this, 400, errorResponse, params);
                     });
                 };
-        
+
                 method.invoke({
                     caseNumber: "90009528",
                     documentId: 12
                 }, plugins);
-        
-            },
 
-            //specifically tests that SMD methods with returns: { type: "null" } are not unwrapped
-            testProcessNullResponse: function () {
+            });
+
+
+            //specifically it("tests that SMD methods with returns: { type",  "null" } are not unwrapped
+            it("testProcessNullResponse",  function () {
 
                 var method = new ServiceMethod("deleteCaseNote", myReader, mockProvider),
                     plugins = util.mixin(this.defaultPlugins, {
                         response: [{
                             fn: function (data, params) {
-                                assertTrue(false); //shouldn't execute response callback on null responses, so verify no execution
+                                assert.isTrue(false); //shouldn't execute response callback on null responses, so verify no execution
                             }
                         }],
                         read: [{
                             fn: function (item) {
-                                assertTrue(false); //read plugins shouldn't execute against null responses either
+                                assert.isTrue(false); //read plugins shouldn't execute against null responses either
                             }
                         }],
                         handler: [{
                             fn: function (data, params) {
-                                assertUndefined(data); //load callback should have undefined data for null response, since it wasn't processed
+                                assert.isUndefined(data); //load callback should have undefined data for null response, since it wasn't processed
                             }
                         }]
                     });
@@ -248,8 +258,8 @@ require([
                     noteId: 1
                 }, plugins);
 
-            }
+            });
 
         });
-    
+
     });

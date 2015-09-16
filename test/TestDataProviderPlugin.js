@@ -1,4 +1,4 @@
-require([
+define([
     "circuits/plugins/DataProviderPlugin",
     "circuits/ServiceFactory",
     "circuits/Service",
@@ -25,45 +25,45 @@ require([
 
     // test standard CRUD operations of a service using a factory to create, plugins to process results
     // etc...
-    b = new TestCase("TestDataProviderPlugin", {
+    describe("TestDataProviderPlugin", function() {
 
-        setUp: function () {
+        beforeEach(function () {
             serviceFactoryCRUD = new Factory({
                 resolver: SyncResolveServices
             });
             origServiceCRUD = serviceFactoryCRUD.getServiceByName("Schema/SimpleTestServiceSchema");
             genericizedServiceCRUD = serviceFactoryCRUD.getServiceByName("Schema/SimpleTestServiceSchema", [dataProviderPlugin]);
-        },
+        });
 
-        testGenericHasOriginal: function () {
-            assertNotUndefined(genericizedServiceCRUD.createModel);
-            assertNotUndefined(genericizedServiceCRUD.readModel);
-            assertNotUndefined(genericizedServiceCRUD.updateModel);
-            assertNotUndefined(genericizedServiceCRUD.deleteModel);
-        },
+        it("testGenericHasOriginal",  function () {
+            assert.isDefined(genericizedServiceCRUD.createModel);
+            assert.isDefined(genericizedServiceCRUD.readModel);
+            assert.isDefined(genericizedServiceCRUD.updateModel);
+            assert.isDefined(genericizedServiceCRUD.deleteModel);
+        });
 
-        testGenericHasGeneric: function () {
+        it("testGenericHasGeneric",  function () {
 
             conf.debug("*+*+*+*+*++*+*+++++origServiceCRUD.create = " + origServiceCRUD.create);
-            assertNotUndefined(genericizedServiceCRUD.create);
-            assertNotUndefined(genericizedServiceCRUD.read);
-            assertNotUndefined(genericizedServiceCRUD.update);
-            assertNotUndefined(genericizedServiceCRUD.remove);
-        },
+            assert.isDefined(genericizedServiceCRUD.create);
+            assert.isDefined(genericizedServiceCRUD.read);
+            assert.isDefined(genericizedServiceCRUD.update);
+            assert.isDefined(genericizedServiceCRUD.remove);
+        });
 
-        testOriginalLacksGeneric: function () {
-            assertUndefined(origServiceCRUD.create);
-            assertUndefined(origServiceCRUD.read);
-            assertUndefined(origServiceCRUD.update);
-            assertUndefined(origServiceCRUD.remove);
-        },
+        it("testOriginalLacksGeneric",  function () {
+            assert.isUndefined(origServiceCRUD.create);
+            assert.isUndefined(origServiceCRUD.read);
+            assert.isUndefined(origServiceCRUD.update);
+            assert.isUndefined(origServiceCRUD.remove);
+        });
 
-        testGenericEquality: function () {
-            assertEquals(String(origServiceCRUD.createModel), String(genericizedServiceCRUD.create));
-            assertEquals(String(origServiceCRUD.readModel), String(genericizedServiceCRUD.read));
-            assertEquals(String(origServiceCRUD.updateModel), String(genericizedServiceCRUD.update));
-            assertEquals(String(origServiceCRUD.deleteModel), String(genericizedServiceCRUD.remove));
-        }
+        it("testGenericEquality",  function () {
+            assert.equal(String(origServiceCRUD.createModel), String(genericizedServiceCRUD.create));
+            assert.equal(String(origServiceCRUD.readModel), String(genericizedServiceCRUD.read));
+            assert.equal(String(origServiceCRUD.updateModel), String(genericizedServiceCRUD.update));
+            assert.equal(String(origServiceCRUD.deleteModel), String(genericizedServiceCRUD.remove));
+        });
     });
 
 });

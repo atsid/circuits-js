@@ -18,9 +18,10 @@ requirejs.config({
 
     paths: {
         'circuits': 'js',
-        'test': 'test',
+        'test':  'test',
         'Schema': 'test/data/schema'
     },
+
     //*/
     // ask Require.js to load these files (all our tests)
     deps: tests,

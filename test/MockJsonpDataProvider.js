@@ -2,9 +2,9 @@
  * @class MockJsonpDataProvider
  *
  * @inherits circuits/NativeJsonpDataProvider
- * 
+ *
  * This class inherits from the NativeJsonpDataProvider for the sole reason
- * of overriding that classes invoke method, thereby providing the ability to 
+ * of overriding that classes invoke method, thereby providing the ability to
  * test JSONP requests against the local file system.
  */
 define([
@@ -17,11 +17,11 @@ define([
     var module = declare(NativeJsonpDataProvider, {
         /**
          * Adds script tag to header of page to make jsonp request and invokes the callback.
-         * @param {object} params 
+         * @param {object} params
          * @returns {Node}
          *
-         * This implementation is intended to be identical to the one in the 
-         * circuits/NativeJsonpDataProvider class with the exception that it 
+         * This implementation is intended to be identical to the one in the
+         * circuits/NativeJsonpDataProvider class with the exception that it
          * does not append the standard JSONP callback parameters to the query string,
          * thereby allowing the testing of a JSONP request against the local file system.
          */
@@ -42,16 +42,19 @@ define([
                     }
                 };
 
-                
+
             window[jsonpCallback] = function (data) {
-                window.clearTimeout(timeoutId);
+                if (timeoutId) {
+                    window.clearTimeout(timeoutId);
+                    timeoutId = null;
+                }
                 // TODO: add response validation here
                 load("200", data);
                 delete window[jsonpCallback];
                 headElement.removeChild(element);
             };
-            
-            // Error handlers fall back to timeout. 
+
+            // Error handlers fall back to timeout.
             element.onerror = handleError;
             element.onreadystatechange = function () {
                 var readyState = element.readyState;
@@ -59,7 +62,10 @@ define([
                     handleError({type: 'error'});
                 }
             };
-            timeoutId = window.setTimeout(handleError, timeout, 'timeout');
+
+            if (timeout !== 'none') {
+                timeoutId = window.setTimeout(handleError, timeout, 'timeout');
+            }
 
             element.type = 'text/javascript';
             element.src = this.updateQueryString(params.jsonpUrl, params.callbackName, jsonpCallback);

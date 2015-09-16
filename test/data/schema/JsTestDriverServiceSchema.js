@@ -6,7 +6,7 @@ define([], function () {
         "$schema": "http://json-schema.org/draft-03/schema",
         "transport": "REST",
         "envelope": "PATH",
-        "target": "test/src/test/data/schema",
+        "target": "/base/test/data/schema",
         "description": "Test connection to jstestdriver.",
         "contentType": "application/json",
         "services": {

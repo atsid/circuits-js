@@ -82,9 +82,14 @@ define([
             "Schema/responses/SimpleTestModelResponse":  SimpleTestModelResponse
         },
         resolve = function (name) {
-            return schemas[name];
+            return clone(schemas[name]);
         };
 
     return resolve;
 
 });
+
+
+function clone(e) {
+    return JSON.parse(JSON.stringify(e));
+}

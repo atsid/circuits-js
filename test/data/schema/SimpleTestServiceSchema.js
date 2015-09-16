@@ -1,5 +1,5 @@
 define([], function () {
-	
+
 	return {
 	    "id": "Schema/SimpleTestServiceSchema",
         "SMDVersion": "2.0",
