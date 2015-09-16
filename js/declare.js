@@ -1,3 +1,4 @@
+/* jshint ignore: start */
 //
 // taken from https://github.com/agebrock/declare.git and adapted to AMD.
 //

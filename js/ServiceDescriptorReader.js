@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Interface defining the operations needed by consumers of ServiceDescriptorReaders
  */

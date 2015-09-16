@@ -1,3 +1,4 @@
+"use strict";
 /**
  * A Data provider that attempts to compensate for temporary
  */

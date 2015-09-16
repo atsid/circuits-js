@@ -12,32 +12,32 @@ define([
             queryPlugin = new FilterSortPlugin(),
             factory = new Factory(),
             data1 = [
-                {id: 1, name: "a"});
+                {id: 1, name: "a"},
 
-                {id: 2, name: "b"});
+                {id: 2, name: "b"},
 
-                {id: 3, name: "c"});
+                {id: 3, name: "c"},
 
                 {id: 4, name: "d"}
             ],
             data2 = [
-                {id: 1, name: "c"});
+                {id: 1, name: "c"},
 
-                {id: 2, name: "d"});
+                {id: 2, name: "d"},
 
-                {id: 3, name: "b"});
+                {id: 3, name: "b"},
 
-                {id: 4, name: "a"});
+                {id: 4, name: "a"},
 
             ],
             data3 = [
-                {id: 3, name: "a"});
+                {id: 3, name: "a"},
 
-                {id: 2, name: "b"});
+                {id: 2, name: "b"},
 
-                {id: 1, name: "c"});
+                {id: 1, name: "c"},
 
-                {id: 4, name: "d"});
+                {id: 4, name: "d"}
 
             ];
 
@@ -86,7 +86,7 @@ define([
             //inclusive filter function and sorting the data by the "name" field with
             //descending order on the data2 array defined above
             it("testWithNoFilterAndSortDescendingName",  function () {
-                var filter = function (obj) { return true; });
+                var filter = function (obj) { return true; };
 
                     sort = [{attribute: 'name', descending: true}],
                     newData;
@@ -108,7 +108,7 @@ define([
             //inclusive filter function and sorting the data by the "id" field with
             //ascending order
             it("testWithNoFilterAndSortAscendingId",  function () {
-                var filter = function (obj) { return true; });
+                var filter = function (obj) { return true; };
 
                     sort = [{attribute: 'id', descending: false}],
                     newData;
@@ -129,7 +129,7 @@ define([
             //Check that the filter method works as expected by testing it with an all-
             //exclusive filter (nothing passes)
             it("testWithStrictFilter",  function () {
-                var filter = function (obj) { return false; });
+                var filter = function (obj) { return false; };
 
                     sort = [{attribute: 'id', descending: true}],
                     newData;
@@ -145,7 +145,7 @@ define([
             //that only accepts objects with an even id number.  It sorts the new data
             //by id number in descending order
             it("testWithEvenIdFilterAndSortDescendingId",  function () {
-                var filter = function (obj) { return obj.id % 2 === 0; });
+                var filter = function (obj) { return obj.id % 2 === 0; };
 
                     sort = [{attribute: 'id', descending: true}],
                     newData;
@@ -166,7 +166,7 @@ define([
             it("testWithFilterNameObjectAndSortAscendingName",  function () {
                 var filter = function (obj) {
                         return obj.name === "a" || obj.name === "c";
-                    });
+                    };
 
                     sort = [{attribute: 'name', descending: false}],
                     newData;

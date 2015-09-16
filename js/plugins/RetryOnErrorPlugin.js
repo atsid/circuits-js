@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Handler Plugin that retries a service call a configured number of times
  * before calling a configured error method.

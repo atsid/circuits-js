@@ -1,3 +1,4 @@
+"use strict";
 var profile = (function () {
     var copyOnly = function (filename, mid) {
             var list = {
@@ -6,7 +7,7 @@ var profile = (function () {
             };
             return list.hasOwnProperty(mid);
         };
- 
+
     return {
         resourceTags: {
             copyOnly: function (filename, mid) {

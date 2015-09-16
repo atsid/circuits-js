@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Plugin to provide a generic handler for all response types. *
  */

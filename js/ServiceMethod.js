@@ -1,3 +1,4 @@
+"use strict";
 /**
  * @class circuits.ServiceMethod
  * A wrapper class for service method invocations. An instance of this class is created
@@ -65,7 +66,7 @@ define([
 
                         //add the total from the payload if it is an array response. putting it in the request object, as that is where http status, etc. is stored.
                         newParams.request.total = data && data.total;
-                        
+
                         newParams.response = data;
 
                         //links should be sitting alonside the actual payload, like the total.
@@ -99,17 +100,17 @@ define([
                     provider = provider.fn.call(provider.scope || provider, this);
                 }
 
-               
+
                 // add Content-Type header if there is a payload and it has an enctype.
                 if (payloadParamDef && payloadParamDef.enctype) {
                     headers = {"Content-Type": payloadParamDef.enctype};
                     // it's a regular payload so process it.
                 } else {
                     requestPayload = this.processRequest(requestPayload, plugins);
-                }                
+                }
 
                 logger.debug("Calling method [" + this.name + "] with URL: " + url);
-                
+
                 requestParams = {
                     url: url,
                     headers: headers,
@@ -120,14 +121,14 @@ define([
                     timeout: timeout || "none",
                     dontExecute: true
                 };
-                
+
                 if (jsonpCallbackParam) {
                     requestParams.jsonpCallbackParam = jsonpCallbackParam;
                 }
 
                 newParams.request = provider[provider.httpMethodMap[method].method](requestParams);
-              
-                
+
+
                 if (smdReturn.type === "any") {
                     newParams.request.url = url;
                     newParams.request.mediaType = this.smdMethod.contentType || "";

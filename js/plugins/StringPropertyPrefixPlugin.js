@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Plugin that provides a built-in function to prefix a string for a given item's property with a configured value.
  * Typically used to add proxy/app path to a relative url property.

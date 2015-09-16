@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Plugin to provide a generic handler for an error response.
  * - Existing error and onError plugins are converted to this plugin.

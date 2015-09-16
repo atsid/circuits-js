@@ -1,3 +1,4 @@
+"use strict";
 /**
  * A PluginMatcher is used to match plugins based on the service and method name (using "regex-style" match),
  * and sort them according to type.

@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Plugin to provide a generic handler for a timeout.
  * - Existing timeout and onTimeout plugins are converted to this plugin.

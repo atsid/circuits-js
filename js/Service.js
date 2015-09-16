@@ -1,3 +1,4 @@
+"use strict";
 /**
  * @class {circuits.Service}
  * First class wrapper object for working with services defined in SMDs.
@@ -15,7 +16,7 @@ define([
     "./log",
     "./plugins/HandlerErrorPlugin",
     "./plugins/HandlerSuccessPlugin",
-    "./NativeJsonpDataProvider",    
+    "./NativeJsonpDataProvider",
     "./plugins/HandlerTimeoutPlugin"
 ], function (
     declare,
@@ -53,7 +54,7 @@ define([
                 this.factoryPlugins = factoryPlugins;
                 this.plugins = servicePlugins;
                 this.pluginMatcher = new PluginMatcher();
-                
+
                 //if JSONP transport is not supported by the existing provider
                 if (transport === 'JSONP' && !provider.supportsTransport('JSONP')) {
                     this.addPlugin({

@@ -1,3 +1,4 @@
+"use strict";
 /*global window */
 /**
  * @class circuits.NativeJsonpDataProvider
@@ -16,10 +17,10 @@ define([
     logger
 ) {
     var module = declare(DataProvider, {
-        
+
             constructor: function (config) {
                 var that = this;
-                
+
                 this.hitchedInvoke = function () {
                     that.invokeJsonpRequest.apply(that, arguments);
                 };
@@ -39,7 +40,7 @@ define([
                     jsonpUrl: params.url,
                     timeout: params.timeout
                 }, this.hitchedInvoke);
-            
+
                 return request;
             },
 
@@ -54,10 +55,10 @@ define([
             del: function (params) {
                 throw new Error("Can not do deletes via JSONP");
             },
-            
+
             /**
              * @param {string} transport
-             * @return {boolean} 
+             * @return {boolean}
              * @overrides
              */
             supportsTransport: function (transport) {
@@ -66,7 +67,7 @@ define([
 
             /**
              * Adds script tag to header of page to make jsonp request and invokes the callback.
-             * @param {object} params 
+             * @param {object} params
              */
             invokeJsonpRequest: function (params) {
                 var element = document.createElement('script'),
@@ -85,7 +86,7 @@ define([
                         }
                     };
 
-                    
+
                 window[jsonpCallback] = function (data) {
                     window.clearTimeout(timeoutId);
                     // TODO: add response validation here
@@ -93,8 +94,8 @@ define([
                     delete window[jsonpCallback];
                     headElement.removeChild(element);
                 };
-                
-                // Error handlers fall back to timeout. 
+
+                // Error handlers fall back to timeout.
                 element.onerror = handleError;
                 element.onreadystatechange = function () {
                     var readyState = element.readyState;
@@ -103,7 +104,7 @@ define([
                     }
                 };
                 timeoutId = window.setTimeout(handleError, timeout, 'timeout');
-    
+
                 element.type = 'text/javascript';
                 element.src = this.updateQueryString(params.jsonpUrl, params.callbackName, jsonpCallback);
                 element.id = jsonpCallback;
@@ -112,7 +113,7 @@ define([
 
                 headElement.appendChild(element);
             },
-            
+
             /**
              * Appends the callback parameter to the existing url
              * @param {string} url
@@ -122,13 +123,13 @@ define([
              */
             updateQueryString: function (url, key, value) {
                 var regex = new RegExp("([?|&])" + key + "=.*?(&|#|$)(.*)", "gi"),
-                    separator, 
+                    separator,
                     hash;
-                    
+
                 if (regex.test(url)) {
                     url = url.replace(regex, '$1' + key + "=" + value + '$2$3');
                 } else {
-                    separator = url.indexOf('?') !== -1 ? '&' : '?',
+                    separator = url.indexOf('?') !== -1 ? '&' : '?';
                     hash = url.split('#');
                     url = hash[0] + separator + key + '=' + value;
                 }

@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Plugin to provide a generic handler for a success response.
  * - Existing success, load and onLoad plugins are converted to this plugin.

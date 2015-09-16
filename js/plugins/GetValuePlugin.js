@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Mixin plugin that adds a getValue method to a service instance, emulating the getValue functionality
  * of the dojo Read API.

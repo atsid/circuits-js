@@ -1,3 +1,4 @@
+"use strict";
 /**
  * @class WebStorage
  * Wrap the global WebStorage objects in a utility class that provides storage

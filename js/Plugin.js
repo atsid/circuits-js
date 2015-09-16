@@ -1,3 +1,4 @@
+"use strict";
 /**
  * @class circuits/Plugin
  * Convenience class for making plugin objects. Plugins provide a way to tailor the behavior of circuits for a given service

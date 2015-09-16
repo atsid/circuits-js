@@ -71,10 +71,6 @@ define([
 
         describe("TestDojoReadApiPlugin", function() {
 
-            setup: function () {
-            });
-
-
             //Tests that the constructor properly instantiates properties
             it("testDefaultConstructor",  function () {
                 var service = factory.getService(CaseService, {});
@@ -110,8 +106,7 @@ define([
                             retVal[this.getIdentityAttributes()] = '23.98767';
                             retVal.description = 'This is just for testing';
                             return retVal;
-                        });
-
+                        },
                         methodArgs: 'caseNumber'
                     }),
                     service = factory.getService(CaseService, {}),
@@ -136,7 +131,7 @@ define([
                     caseNumber: '123',
                     onBegin: function () {
                         calledOnBegin = true;
-                    });
+                    },
 
                     onComplete: function () {
                         calledOnComplete = true;

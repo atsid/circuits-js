@@ -1,3 +1,4 @@
+"use strict";
 /**
  * "url" phase plugin to prepend a configured string to a url.
  * @cfg String

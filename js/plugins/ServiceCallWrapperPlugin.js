@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Mixin plugin that wraps the service calls on a service with the configured wrapper
  * method. The signature of the wrapper method will include the standard service call

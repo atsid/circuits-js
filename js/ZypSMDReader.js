@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Parses an SMD and provides methods to read information from it for working with RESTful services.
  * Uses the format defined by Kris Zyp and utilized by Dojo for RPC stores
@@ -74,7 +75,7 @@ define([
                                 }
                             });
 
-                        }, this);
+                        }, this); // jshint ignore:line
 
                         props.push(propsObj);
                         props = getExtendedProperties(parent, props);

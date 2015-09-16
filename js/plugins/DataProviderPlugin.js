@@ -1,3 +1,4 @@
+"use strict";
 define([
     "../declare",
     "../Plugin"
@@ -6,7 +7,7 @@ define([
     Plugin
 ) {
     var module =  declare(Plugin, {
-        
+
         /**
          * Maps simple CRUD operations to actual service methods.
          * @param {Object} args should consist of 4 key/value pairs:

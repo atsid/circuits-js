@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Plugin that does a client-side filter of the service method's last-loaded data items.
  * Uses the dojo SimpleQueryEngine, which can filter and sort JSON lists with a jsonPath expression.

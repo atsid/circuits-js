@@ -1,3 +1,4 @@
+"use strict";
 /**
  * @class circuits/DataProvider
  *
@@ -54,7 +55,7 @@ define([
         del: function (params) {
             throw new Error("Must implement DataProvider.del()");
         },
-        
+
         /**
          * Transport support check.
          * @param {string} transport The transport to check

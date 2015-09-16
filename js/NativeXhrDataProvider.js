@@ -1,3 +1,4 @@
+"use strict";
 /**
 * @class circuits.NativeXhrDataProvider
 *
@@ -252,7 +253,7 @@ define([
                     xhr.abort();
                 };
                 setTimeout(function () {  /* vs. xhr.timeout */
-                    this.response = {}
+                    this.response = {};
                     if (xhr.readyState < 4 && !xhr.timedOut) {
                         xhr.ontimeout();
                     }

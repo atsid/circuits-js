@@ -1,3 +1,5 @@
+"use strict";
+/* global dojo */
 /**
  * @class AmdResolver
  * A simple class to provide a resolver using amd require
