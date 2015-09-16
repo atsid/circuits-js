@@ -24,18 +24,18 @@ gulp.task('lint', function () {
 
 gulp.task('scripts', function () {
     var rename = require("gulp-rename");
-    return gulp.src("js/fullpack.js")
+    return gulp.src("js/allpack.js")
         .pipe(require('gulp-requirejs-optimize')({
             baseUrl: "./js",
             paths: {
-                smithy: ".",
+                circuits: ".",
                 dojo: "empty:",
                 dojox: "empty:",
                 dijit: "empty:"
             },
-            name: "smithy/fullpack"
+            name: "circuits/allpack"
         }))
-        .pipe(rename("smithy.min.js"))
+        .pipe(rename("circuits-min.js"))
         .pipe(gulp.dest('./'));
 });
 

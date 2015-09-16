@@ -51,7 +51,7 @@ module.exports = function(config){
     // - PhantomJS
     // - IE (only Windows)
     browsers: [
-        'Chrome'
+        'PhantomJS'
     ],
 
     // If browser does not capture in given timeout [ms], kill it

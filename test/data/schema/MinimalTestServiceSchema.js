@@ -19,7 +19,9 @@ define([],
                     }
                 ],
                 "payload": "model",
-                "returns": "void"
+                "returns": {
+                    "type": "null"
+                }
             },
             "withEnvelope": {
                 "target": "{modelNumber}",
@@ -34,7 +36,9 @@ define([],
                     }
                 ],
                 "payload": "model",
-                "returns": "void"
+                "returns": {
+                    "type": "null"
+                }
             }
         }
     };

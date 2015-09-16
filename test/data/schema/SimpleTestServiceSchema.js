@@ -167,7 +167,9 @@ define([], function () {
 	                   "required": true
 	               }
 	             ],
-	             "returns": "void"
+                 "returns": {
+                    "type": "null"
+                 }
 	        },
             "serviceWithNoEnvelope": {
                 "target": "{modelNumber}",
@@ -181,7 +183,9 @@ define([], function () {
                         "required": true
                     }
                 ],
-                "returns": "void"
+                "returns": {
+                    "type": "null"
+                }
             }
         }
 	};
