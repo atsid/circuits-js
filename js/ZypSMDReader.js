@@ -166,6 +166,7 @@ define([
                     schema.tag = {};
                 }
                 schema.tag.resolved = true;
+                schema.resolvedProperties = true;
             }
 
             //if a schema has already been resolved, don't do it again - we can get into endless recursion
@@ -218,14 +219,14 @@ define([
         getJsonpCallbackParameter: function () {
             return this.smd.jsonpCallbackParameter;
         },
-        
+
         /**
          * Gets the transport property for the service.
          */
         getTransport: function () {
             return this.smd.transport;
         },
-        
+
         /**
          * Gets a list of the service method names defined by the SMD.
          */
@@ -327,7 +328,7 @@ define([
         getMethodTransport: function (methodName) {
             return this.smd.services[methodName].transport;
         },
-        
+
         getMethodTimeout: function (methodName) {
             return this.smd.services[methodName].timeout;
         },
