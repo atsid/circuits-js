@@ -27,9 +27,9 @@ define([
     "Schema/responses/ListResponse",
     "Schema/services/CaseService",
     "Schema/services/PagingServiceMethod",
-    "Schema/responses/ListResponse",
     "Schema/responses/SimpleTestModelListResponse",
-    "Schema/responses/SimpleTestModelResponse"
+    "Schema/responses/SimpleTestModelResponse",
+    "test/testUtils"
 ], function (
     BinaryObjectService,
     GlobalParamsSchema,
@@ -53,9 +53,9 @@ define([
     CaseService,
     PagingServiceMethod,
     SimpleTestModelListResponse,
-    SimpleTestModelResponse
+    SimpleTestModelResponse,
+    testUtils
 ) {
-
     var schemas = {
             "Schema/BinaryObjectService": BinaryObjectService,
             "Schema/GlobalParamsSchema": GlobalParamsSchema,
@@ -82,14 +82,9 @@ define([
             "Schema/responses/SimpleTestModelResponse":  SimpleTestModelResponse
         },
         resolve = function (name) {
-            return clone(schemas[name]);
+            return testUtils.clone(schemas[name]);
         };
 
     return resolve;
 
 });
-
-
-function clone(e) {
-    return JSON.parse(JSON.stringify(e));
-}

@@ -41,11 +41,11 @@ define([
             });
         });
 
-        it("Test readViaServiceMachinery", function (done) {
+        it("Test readViaServiceMachinery successful", function (done) {
             var urlPlug = new UrlPrefixPlugin({
                 pointcut: "*.*",
                 name: "addServiceRoot",
-                prefix: location.protocol + "//" + location.host + "/"
+                prefix: ""
             }),
             factory = new ServiceFactory({
                 plugins: [urlPlug],
@@ -59,8 +59,27 @@ define([
                 load: function (data) {
                     assert.equal("123", data);
                     assert.equal(200, req.statusCode);
+                    done();
+                },
+                error: function() {
+                    assert.fail("Should find file");
                 }
             });
+        });
+
+        it("Test readViaServiceMachinery missing file", function (done) {
+            var urlPlug = new UrlPrefixPlugin({
+                pointcut: "*.*",
+                name: "addServiceRoot",
+                prefix: ""
+            }),
+            factory = new ServiceFactory({
+                plugins: [urlPlug],
+                provider: new NativeXhrDataProvider(),
+                resolver: SyncResolveServices
+            }),
+            req,
+            svc = factory.getServiceByName("Schema/JsTestDriverServiceSchema");
 
             req = svc.readModel({modelname: "doesntexist.js"}, {
                 load: function() { assert.fail(false, true, "Should not be successful"); },
