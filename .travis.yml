@@ -1,5 +1,5 @@
-language: javascript
-maven:
-  - "4.0.0"
-before_install: mvn install
+language: node_js
+node_js:
+  - "0.12"
+before_install: npm install -g grunt-cli
 sudo: false
